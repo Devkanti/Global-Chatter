@@ -5,8 +5,9 @@ import FriendsSidebar from './components/FriendsSidebar';
 import ChatArea from './components/ChatArea';
 import SettingsModal from './components/SettingsModal';
 import UserProfileModal from './components/UserProfileModal';
-import { MessageSquare, Globe, KeyRound, Plus, Settings, Sun, Moon, PanelRightClose, PanelRightOpen, ArrowRight, Sparkles, User } from 'lucide-react';
+import { MessageSquare, Globe, KeyRound, Plus, Settings, Sun, Moon, PanelRightClose, PanelRightOpen, ArrowRight, Sparkles, User, Mail, Lock } from 'lucide-react';
 import { initCrypto } from './crypto';
+import { socket, BACKEND_URL } from './socket';
 import './App.css';
 
 function App() {
@@ -32,6 +33,15 @@ function App() {
   const [showFriends, setShowFriends] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [selectedUserProfile, setSelectedUserProfile] = useState(null);
+  
+  // Auth States
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [otpMode, setOtpMode] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const myPrivateKeyRef = useRef(null);
   const myPublicKeyJwkRef = useRef(null);
@@ -84,24 +94,83 @@ function App() {
     };
   }, []);
 
-  const handleLogin = async (e) => {
+  const finishLoginSetup = async (usernameValue, token) => {
+    localStorage.setItem('chat_token', token);
+    
+    // Setup crypto
+    const { privateKey, publicKeyJwk } = await initCrypto(usernameValue);
+    myPrivateKeyRef.current = privateKey;
+    myPublicKeyJwkRef.current = publicKeyJwk;
+
+    setUsername(usernameValue);
+    setIsLoggedIn(true);
+
+    const saved = JSON.parse(localStorage.getItem(`saved_rooms_${usernameValue}`) || '[]');
+    setSavedRooms(saved);
+    setActiveRooms(saved);
+    const customNames = JSON.parse(localStorage.getItem(`custom_room_names_${usernameValue}`) || '{}');
+    setCustomRoomNames(customNames);
+
+    socket.auth = { token };
+    socket.connect();
+    socket.emit('user:login', { publicKey: publicKeyJwk });
+  };
+
+  const handleAuthSubmit = async (e) => {
     e.preventDefault();
-    if (username.trim()) {
-      const { privateKey, publicKeyJwk } = await initCrypto(username.trim());
-      myPrivateKeyRef.current = privateKey;
-      myPublicKeyJwkRef.current = publicKeyJwk;
+    setAuthError('');
+    setIsLoading(true);
 
-      setIsLoggedIn(true);
+    try {
+      const endpoint = isSignUp ? '/auth/signup' : '/auth/login';
+      const body = isSignUp ? { email, password, username: username.trim() } : { email, password };
 
-      const saved = JSON.parse(localStorage.getItem(`saved_rooms_${username.trim()}`) || '[]');
-      setSavedRooms(saved);
-      setActiveRooms(saved);
+      const res = await fetch(`${BACKEND_URL}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
 
-      const customNames = JSON.parse(localStorage.getItem(`custom_room_names_${username.trim()}`) || '{}');
-      setCustomRoomNames(customNames);
+      if (!res.ok) {
+        throw new Error(data.error || 'Authentication failed');
+      }
 
-      socket.connect();
-      socket.emit('user:login', { username: username.trim(), publicKey: publicKeyJwk });
+      if (isSignUp) {
+        setOtpMode(true);
+      } else {
+        await finishLoginSetup(data.user.username, data.token);
+      }
+    } catch (err) {
+      setAuthError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setIsLoading(true);
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/auth/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp: otpCode })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Verification failed');
+      }
+
+      await finishLoginSetup(data.user.username, data.token);
+      setOtpMode(false);
+    } catch (err) {
+      setAuthError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -277,47 +346,81 @@ function App() {
             fontWeight: '700', 
             marginBottom: '0.5rem',
             letterSpacing: '-0.5px'
-          }}>Welcome Back</h1>
-          <p className="subtitle" style={{ color: 'var(--text-muted)', fontSize: '1rem', marginBottom: '2.5rem' }}>Enter your username to join the conversation</p>
+          }}>
+            {otpMode ? 'Verify Email' : (isSignUp ? 'Create Account' : 'Welcome Back')}
+          </h1>
+          <p className="subtitle" style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '2rem', textAlign: 'center' }}>
+            {otpMode ? `Enter the 6-digit code sent to ${email}` : (isSignUp ? 'Sign up to get started' : 'Log in to continue chatting')}
+          </p>
 
-          <form onSubmit={handleLogin} className="login-form" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
-              <label htmlFor="username-input" style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem', textAlign: 'left', display: 'block' }}>Username</label>
-              <div style={{ position: 'relative' }}>
-                <User size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.7, pointerEvents: 'none' }} />
-                <input
-                  id="username-input"
-                  type="text"
-                  placeholder="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20))}
-                  style={{ paddingLeft: '2.5rem' }}
-                  autoFocus
-                />
-              </div>
+          {authError && (
+            <div style={{ width: '100%', padding: '0.8rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', color: '#ef4444', fontSize: '0.85rem', marginBottom: '1.5rem', textAlign: 'center' }}>
+              {authError}
             </div>
-            
-            <button 
-              type="submit" 
-              className="btn-primary" 
-              disabled={!username.trim()}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                padding: '0.85rem',
-                borderRadius: '12px',
-                fontWeight: '600',
-                fontSize: '1rem',
-                marginTop: '0.5rem',
-                transition: 'all 0.2s',
-                opacity: !username.trim() ? 0.5 : 1
-              }}
-            >
-              Continue <ArrowRight size={18} />
-            </button>
-          </form>
+          )}
+
+          {otpMode ? (
+            <form onSubmit={handleVerifyOTP} className="login-form" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem' }}>OTP Code</label>
+                <div style={{ position: 'relative' }}>
+                  <KeyRound size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.7 }} />
+                  <input
+                    type="text"
+                    placeholder="123456"
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    style={{ paddingLeft: '2.5rem', letterSpacing: '4px', textAlign: 'center', fontSize: '1.2rem', fontWeight: '700' }}
+                    autoFocus
+                  />
+                </div>
+              </div>
+              <button type="submit" className="btn-primary" disabled={otpCode.length !== 6 || isLoading} style={{ padding: '0.85rem', borderRadius: '12px', fontWeight: '600', marginTop: '0.5rem', opacity: (otpCode.length !== 6 || isLoading) ? 0.5 : 1 }}>
+                {isLoading ? 'Verifying...' : 'Verify & Continue'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleAuthSubmit} className="login-form" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem' }}>Email</label>
+                <div style={{ position: 'relative' }}>
+                  <Mail size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.7 }} />
+                  <input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} style={{ paddingLeft: '2.5rem' }} required autoFocus />
+                </div>
+              </div>
+
+              {isSignUp && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
+                  <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem' }}>Username</label>
+                  <div style={{ position: 'relative' }}>
+                    <User size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.7 }} />
+                    <input type="text" placeholder="username" value={username} onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20))} style={{ paddingLeft: '2.5rem' }} required />
+                  </div>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem' }}>Password</label>
+                <div style={{ position: 'relative' }}>
+                  <Lock size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.7 }} />
+                  <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={{ paddingLeft: '2.5rem' }} required minLength={6} />
+                </div>
+              </div>
+              
+              <button type="submit" className="btn-primary" disabled={isLoading || !email || !password || (isSignUp && !username)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.85rem', borderRadius: '12px', fontWeight: '600', marginTop: '0.5rem', opacity: isLoading ? 0.7 : 1 }}>
+                {isLoading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Log In')} <ArrowRight size={18} />
+              </button>
+            </form>
+          )}
+
+          {!otpMode && (
+            <p style={{ marginTop: '1.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+              {isSignUp ? 'Already have an account?' : "Don't have an account?"} 
+              <button onClick={() => { setIsSignUp(!isSignUp); setAuthError(''); }} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: '600', marginLeft: '0.5rem', cursor: 'pointer', padding: 0 }}>
+                {isSignUp ? 'Log in' : 'Sign up'}
+              </button>
+            </p>
+          )}
         </div>
       </div>
     );

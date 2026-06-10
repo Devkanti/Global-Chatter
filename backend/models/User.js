@@ -50,17 +50,17 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  slangCount: {
+  reputationScore: {
+    type: Number,
+    default: 100
+  },
+  suspensionStrikes: {
     type: Number,
     default: 0
   },
   suspendedUntil: {
     type: Date,
     default: null
-  },
-  lastScoreReset: {
-    type: Date,
-    default: Date.now
   }
 }, { timestamps: true });
 

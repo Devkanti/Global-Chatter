@@ -46,21 +46,22 @@ io.use(async (socket, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
-    if (!user) {
-      return next(new Error("Authentication error: User not found"));
-    }
-    // Weekly Reset Logic for Reputation Score
-    const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
-    if (!user.lastScoreReset || (Date.now() - new Date(user.lastScoreReset).getTime() > ONE_WEEK)) {
-      user.slangCount = 0;
-      user.lastScoreReset = new Date();
+    // Check if suspension has passed
+    if (user.suspendedUntil && Date.now() > user.suspendedUntil.getTime()) {
+      user.suspendedUntil = null;
+      if (user.reputationScore === 0) {
+        user.reputationScore = 100;
+        user.suspensionStrikes = 0;
+      } else if (user.reputationScore < 60) {
+        user.reputationScore = 60;
+      }
       await user.save();
     }
 
     socket.userId = user._id.toString();
     socket.username = user.username;
     socket.userStats = {
-      slangCount: user.slangCount,
+      reputationScore: user.reputationScore,
       suspendedUntil: user.suspendedUntil ? user.suspendedUntil.getTime() : null
     };
     next();
@@ -121,15 +122,29 @@ io.on('connection', async (socket) => {
       const user = await User.findById(socket.userId);
       if (!user) return;
       
-      user.slangCount += 1;
-      // 40 slang counts = 0% reputation
-      if (user.slangCount >= 40) {
-        user.suspendedUntil = new Date(Date.now() + 60 * 60 * 1000); // 1 hour suspension
+      // Deduct 2% per slang
+      user.reputationScore = Math.max(0, user.reputationScore - 2);
+      
+      // Calculate threshold based on current strikes
+      const currentStrike = user.suspensionStrikes || 0;
+      const threshold = Math.max(0, 50 - (currentStrike * 10));
+      
+      // Apply suspension if threshold hit
+      if (user.reputationScore <= threshold && !user.suspendedUntil) {
+        user.suspensionStrikes += 1;
+        
+        let suspendHours = user.suspensionStrikes;
+        if (user.reputationScore === 0) {
+          suspendHours = 7 * 24; // 7 days
+        }
+        
+        user.suspendedUntil = new Date(Date.now() + suspendHours * 60 * 60 * 1000);
       }
+      
       await user.save();
       
       socket.userStats = {
-        slangCount: user.slangCount,
+        reputationScore: user.reputationScore,
         suspendedUntil: user.suspendedUntil ? user.suspendedUntil.getTime() : null
       };
       

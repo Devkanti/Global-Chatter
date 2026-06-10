@@ -56,7 +56,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
     reader.readAsDataURL(file);
   };
 
-  const score = Math.max(0, 100 - (userStats?.slangCount * 2.5));
+  const score = userStats?.reputationScore ?? 100;
   let scoreColor = 'var(--success)';
   if (score <= 75) scoreColor = '#f59e0b'; // warning orange
   if (score <= 50) scoreColor = '#ef4444'; // danger red

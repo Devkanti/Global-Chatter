@@ -91,16 +91,18 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
       );
     };
 
-    const handleTypingUpdate = ({ username, isTyping }) => {
-      setTypingUsers((prev) => {
-        const newSet = new Set(prev);
-        if (isTyping) {
-          newSet.add(username);
-        } else {
+    const handleTyping = ({ username, roomId: typingRoom }) => {
+      if (typingRoom === roomId) setTypingUsers((prev) => new Set([...prev, username]));
+    };
+    
+    const handleStopTyping = ({ username, roomId: typingRoom }) => {
+      if (typingRoom === roomId) {
+        setTypingUsers((prev) => {
+          const newSet = new Set(prev);
           newSet.delete(username);
-        }
-        return newSet;
-      });
+          return newSet;
+        });
+      }
     };
 
     const handleSystemWarning = (msg) => {
@@ -118,19 +120,39 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
       setMessages(decryptedHistory);
     };
 
+    const handleReadUpdate = ({ roomId: readRoom, reader }) => {
+      if (readRoom === roomId) {
+        setMessages((prev) => 
+          prev.map(msg => {
+            const readBy = msg.readBy || [];
+            if (!readBy.includes(reader)) {
+              return { ...msg, readBy: [...readBy, reader] };
+            }
+            return msg;
+          })
+        );
+      }
+    };
+
     socket.on('message:receive', handleReceiveMessage);
     socket.on('message:receipt', handleReceipt);
-    socket.on('typing:update', handleTypingUpdate);
+    socket.on('user:typing', handleTyping);
+    socket.on('user:stop_typing', handleStopTyping);
+    socket.on('messages:read_update', handleReadUpdate);
     socket.on('system:warning', handleSystemWarning);
     socket.on('room:history', handleRoomHistory);
 
     setMessages([]);
     socket.emit('room:request_history', roomId);
+    // Emit read when opening room
+    socket.emit('messages:read', { roomId });
 
     return () => {
       socket.off('message:receive', handleReceiveMessage);
       socket.off('message:receipt', handleReceipt);
-      socket.off('typing:update', handleTypingUpdate);
+      socket.off('user:typing', handleTyping);
+      socket.off('user:stop_typing', handleStopTyping);
+      socket.off('messages:read_update', handleReadUpdate);
       socket.off('system:warning', handleSystemWarning);
       socket.off('room:history', handleRoomHistory);
     };
@@ -187,7 +209,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
       textareaRef.current.style.height = 'auto';
     }
 
-    socket.emit('typing:stop');
+    socket.emit('user:stop_typing', roomId);
     clearTimeout(typingTimeoutRef.current);
   };
 
@@ -197,13 +219,13 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
     e.target.style.height = 'auto';
     e.target.style.height = `${e.target.scrollHeight}px`;
 
-    socket.emit('typing:start');
+    socket.emit('user:typing', roomId);
 
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
     typingTimeoutRef.current = setTimeout(() => {
-      socket.emit('typing:stop');
+      socket.emit('user:stop_typing', roomId);
     }, 1500);
   };
 

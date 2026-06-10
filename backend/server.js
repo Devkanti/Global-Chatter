@@ -160,6 +160,26 @@ io.on('connection', async (socket) => {
     io.emit('statuses:sync', Object.fromEntries(userStatuses));
   });
 
+  socket.on('user:typing', (roomId) => {
+    socket.to(roomId).emit('user:typing', { username: socket.username, roomId });
+  });
+
+  socket.on('user:stop_typing', (roomId) => {
+    socket.to(roomId).emit('user:stop_typing', { username: socket.username, roomId });
+  });
+
+  socket.on('messages:read', async ({ roomId }) => {
+    try {
+      await Message.updateMany(
+        { roomId, readBy: { $ne: socket.username } },
+        { $push: { readBy: socket.username } }
+      );
+      io.to(roomId).emit('messages:read_update', { roomId, reader: socket.username });
+    } catch (e) {
+      console.error(e);
+    }
+  });
+
   socket.on('user:update_profile', async (base64Image) => {
     await User.findByIdAndUpdate(socket.userId, { avatar: base64Image });
     io.emit('profile:updated', { username: socket.username, avatarUrl: base64Image });

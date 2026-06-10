@@ -49,6 +49,18 @@ const userSchema = new mongoose.Schema({
   privacyMode: {
     type: Boolean,
     default: false
+  },
+  slangCount: {
+    type: Number,
+    default: 0
+  },
+  suspendedUntil: {
+    type: Date,
+    default: null
+  },
+  lastScoreReset: {
+    type: Date,
+    default: Date.now
   }
 }, { timestamps: true });
 

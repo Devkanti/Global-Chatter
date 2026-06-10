@@ -33,14 +33,7 @@ const socketUsers = new Map(); // socket.id -> { userId, username, roomId }
 const roomUsers = new Map(); // roomId -> Set of usernames
 const globalUsers = new Set(); // All unique usernames connected
 const userStatuses = new Map(); // username -> 'online' | 'dnd' | 'invisible'
-const userStats = new Map(); // username -> { slangCount: 0, suspendedUntil: null }
-
-const getStats = (username) => {
-  if (!userStats.has(username)) {
-    userStats.set(username, { slangCount: 0, suspendedUntil: null });
-  }
-  return userStats.get(username);
-};
+// Removed in-memory userStats since we use MongoDB now
 
 const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
@@ -56,8 +49,20 @@ io.use(async (socket, next) => {
     if (!user) {
       return next(new Error("Authentication error: User not found"));
     }
+    // Weekly Reset Logic for Reputation Score
+    const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+    if (!user.lastScoreReset || (Date.now() - new Date(user.lastScoreReset).getTime() > ONE_WEEK)) {
+      user.slangCount = 0;
+      user.lastScoreReset = new Date();
+      await user.save();
+    }
+
     socket.userId = user._id.toString();
     socket.username = user.username;
+    socket.userStats = {
+      slangCount: user.slangCount,
+      suspendedUntil: user.suspendedUntil ? user.suspendedUntil.getTime() : null
+    };
     next();
   } catch (err) {
     next(new Error("Authentication error: Invalid token"));
@@ -98,7 +103,7 @@ io.on('connection', async (socket) => {
     globalUsers.add(socket.username);
     
     io.emit('global:presence', Array.from(globalUsers));
-    socket.emit('user:stats', getStats(socket.username));
+    socket.emit('user:stats', socket.userStats);
     
     // Fetch user document for friends
     const userDoc = await User.findById(socket.userId).populate('friends', 'username').populate('friendRequests', 'username');
@@ -109,6 +114,30 @@ io.on('connection', async (socket) => {
     socket.emit('friend_requests:sync', requestsList);
 
     await syncUserData();
+  });
+
+  socket.on('user:report_slang', async () => {
+    try {
+      const user = await User.findById(socket.userId);
+      if (!user) return;
+      
+      user.slangCount += 1;
+      // 40 slang counts = 0% reputation
+      if (user.slangCount >= 40) {
+        user.suspendedUntil = new Date(Date.now() + 60 * 60 * 1000); // 1 hour suspension
+      }
+      await user.save();
+      
+      socket.userStats = {
+        slangCount: user.slangCount,
+        suspendedUntil: user.suspendedUntil ? user.suspendedUntil.getTime() : null
+      };
+      
+      socket.emit('user:stats', socket.userStats);
+      socket.emit('system:warning', 'Your message was flagged for inappropriate content. Your reputation score has decreased.');
+    } catch (err) {
+      console.log(err);
+    }
   });
 
   socket.on('user:update_status', (status) => {

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { socket } from './socket';
 import Sidebar from './components/Sidebar';
 import FriendsSidebar from './components/FriendsSidebar';
 import ChatArea from './components/ChatArea';

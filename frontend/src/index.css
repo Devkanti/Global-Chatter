@@ -83,6 +83,12 @@ body {
   padding: 2rem;
 }
 
+@media (max-width: 768px) {
+  #root {
+    padding: 0;
+  }
+}
+
 /* Glassmorphism utilities */
 .glass {
   background: var(--panel-bg);

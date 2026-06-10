@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { socket } from '../socket';
-import { X, Upload, ShieldAlert, Clock, EyeOff, Camera } from 'lucide-react';
+import { X, ShieldAlert, Camera, EyeOff, Clock } from 'lucide-react';
 import { getAvatarGradient } from '../utils';
 
 export default function SettingsModal({ isOpen, onClose, currentUser, userProfiles, userStats, userStatuses, userPrivacyMode }) {
@@ -61,7 +61,9 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
   if (score <= 75) scoreColor = '#f59e0b'; // warning orange
   if (score <= 50) scoreColor = '#ef4444'; // danger red
 
+  // eslint-disable-next-line react-hooks/purity
   const isSuspended = userStats?.suspendedUntil && Date.now() < userStats.suspendedUntil;
+  // eslint-disable-next-line react-hooks/purity
   const remainingMinutes = isSuspended ? Math.ceil((userStats.suspendedUntil - Date.now()) / 60000) : 0;
 
   return (

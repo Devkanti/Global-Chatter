@@ -63,7 +63,6 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
 
   useEffect(() => {
     const handleReceiveMessage = async (msg) => {
-      // Decrypt message if not system message
       if (msg.type !== 'system' && msg.payload) {
         msg.text = await decryptMessage(msg.payload, currentUser, myPrivateKey);
       }
@@ -106,7 +105,6 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
 
     const handleSystemWarning = (msg) => {
       setWarningMessage(msg);
-      // Auto-hide after 6 seconds
       setTimeout(() => setWarningMessage(''), 6000);
     };
 
@@ -126,7 +124,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
     socket.on('system:warning', handleSystemWarning);
     socket.on('room:history', handleRoomHistory);
 
-    setMessages([]); // Clear old messages
+    setMessages([]);
     socket.emit('room:request_history', roomId);
 
     return () => {
@@ -209,6 +207,12 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
     }, 1500);
   };
 
+  const copyRoomCode = () => {
+    navigator.clipboard.writeText(roomId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -218,12 +222,6 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
 
   const formatTime = (ts) => {
     return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
-
-  const copyRoomCode = () => {
-    navigator.clipboard.writeText(roomId);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   const isGlobal = roomId === 'global';

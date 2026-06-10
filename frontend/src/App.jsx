@@ -42,7 +42,7 @@ function App() {
   const [authError, setAuthError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const myPrivateKeyRef = useRef(null);
+  const [myPrivateKey, setMyPrivateKey] = useState(null);
   const myPublicKeyJwkRef = useRef(null);
 
   useEffect(() => {
@@ -98,7 +98,7 @@ function App() {
     
     // Setup crypto
     const { privateKey, publicKeyJwk } = await initCrypto(usernameValue);
-    myPrivateKeyRef.current = privateKey;
+    setMyPrivateKey(privateKey);
     myPublicKeyJwkRef.current = publicKeyJwk;
 
     setUsername(usernameValue);
@@ -552,7 +552,7 @@ function App() {
           userFriends={userFriends}
           userPrivacyMode={userPrivacyMode}
           userPublicKeys={userPublicKeys}
-          myPrivateKey={myPrivateKeyRef.current}
+          myPrivateKey={myPrivateKey}
           onSelectUser={setSelectedUserProfile}
           onToggleFriends={() => setShowFriends(prev => !prev)}
           showFriends={showFriends}

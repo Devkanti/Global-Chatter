@@ -66,15 +66,15 @@ io.use(async (socket, next) => {
 
 // Helper to broadcast sync events
 const syncUserData = async () => {
-  const users = await User.find({}, 'username avatar publicKey status friends friendRequests isVerified');
+  const users = await User.find({}, 'username avatar publicKey status friends friendRequests isVerified privacyMode');
   const profiles = {};
   const keys = {};
-  const privacy = {}; // Assume false for now, can be added to DB if needed
+  const privacy = {}; 
   
   users.forEach(u => {
     if (u.avatar) profiles[u.username] = u.avatar;
     if (u.publicKey) keys[u.username] = u.publicKey;
-    privacy[u.username] = false;
+    privacy[u.username] = u.privacyMode || false;
   });
 
   io.emit('profiles:sync', profiles);
@@ -121,6 +121,15 @@ io.on('connection', async (socket) => {
     io.emit('profile:updated', { username: socket.username, avatarUrl: base64Image });
   });
 
+  socket.on('user:toggle_privacy', async () => {
+    const user = await User.findById(socket.userId);
+    if (user) {
+      user.privacyMode = !user.privacyMode;
+      await user.save();
+      await syncUserData();
+    }
+  });
+
   const sendRequestSync = async (targetUsername) => {
     const targetUser = await User.findOne({ username: targetUsername }).populate('friendRequests', 'username');
     if (!targetUser) return;
@@ -136,6 +145,11 @@ io.on('connection', async (socket) => {
     if (friendName === socket.username) return;
     const targetUser = await User.findOne({ username: friendName });
     if (!targetUser) return;
+
+    if (targetUser.privacyMode) {
+      socket.emit('system:warning', `Cannot send request to ${friendName}. They have privacy mode enabled.`);
+      return;
+    }
 
     if (!targetUser.friendRequests.includes(socket.userId)) {
       targetUser.friendRequests.push(socket.userId);

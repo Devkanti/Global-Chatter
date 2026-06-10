@@ -45,7 +45,11 @@ const userSchema = new mongoose.Schema({
   },
   savedRooms: [{
     type: String // roomIds
-  }]
+  }],
+  privacyMode: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

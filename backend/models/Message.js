@@ -30,7 +30,16 @@ const messageSchema = new mongoose.Schema({
   },
   readBy: [{
     type: String // array of usernames who read it
-  }]
+  }],
+  replyTo: {
+    type: String, // ID of the message being replied to
+    default: null
+  },
+  reactions: {
+    type: Map,
+    of: [String], // emoji -> array of usernames
+    default: {}
+  }
 });
 
 module.exports = mongoose.model('Message', messageSchema);

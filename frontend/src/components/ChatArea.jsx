@@ -15,6 +15,8 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
   const [isMembersOpen, setIsMembersOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [hoveredMessage, setHoveredMessage] = useState(null);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -134,8 +136,17 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
       }
     };
 
+    const handleReactUpdate = ({ messageId, reactions }) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId ? { ...msg, reactions } : msg
+        )
+      );
+    };
+
     socket.on('message:receive', handleReceiveMessage);
     socket.on('message:receipt', handleReceipt);
+    socket.on('message:react_update', handleReactUpdate);
     socket.on('user:typing', handleTyping);
     socket.on('user:stop_typing', handleStopTyping);
     socket.on('messages:read_update', handleReadUpdate);
@@ -150,6 +161,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
     return () => {
       socket.off('message:receive', handleReceiveMessage);
       socket.off('message:receipt', handleReceipt);
+      socket.off('message:react_update', handleReactUpdate);
       socket.off('user:typing', handleTyping);
       socket.off('user:stop_typing', handleStopTyping);
       socket.off('messages:read_update', handleReadUpdate);
@@ -177,7 +189,8 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         text: textToSend,
         payload: null,
         timestamp: Date.now(),
-        readBy: []
+        readBy: [],
+        replyTo: replyingTo?.id || null
       };
     } else {
       const recipientPublicKeysJwkMap = {};
@@ -198,12 +211,14 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         text: "[Encrypted Message]",
         payload: encryptedPayload,
         timestamp: Date.now(),
-        readBy: []
+        readBy: [],
+        replyTo: replyingTo?.id || null
       };
     }
 
     socket.emit('message:send', messageData);
     setInputValue('');
+    setReplyingTo(null);
     
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -233,6 +248,10 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
     navigator.clipboard.writeText(roomId);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleReact = (messageId, emoji) => {
+    socket.emit('message:react', { messageId, emoji });
   };
 
   const handleKeyDown = (e) => {
@@ -527,7 +546,12 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
           }
 
           return (
-            <div key={msg.id} className={`chat-message-row ${isMine ? 'mine' : 'other'} animate-fade-in`}>
+            <div 
+              key={msg.id} 
+              className={`chat-message-row ${isMine ? 'mine' : 'other'} animate-fade-in`}
+              onMouseEnter={() => setHoveredMessage(msg.id)}
+              onMouseLeave={() => setHoveredMessage(null)}
+            >
               {!isMine && !isSystem && (
                 <div 
                   className={`chat-avatar ${isGroupedTop ? 'hidden' : ''}`}
@@ -539,17 +563,48 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
                 </div>
               )}
               
-              <div className={`message-wrapper ${isMine ? 'mine' : 'other'} ${isGroupedTop ? 'grouped-top' : ''} ${isGroupedBottom ? 'grouped-bottom' : ''}`}>
+              <div className={`message-wrapper ${isMine ? 'mine' : 'other'} ${isGroupedTop ? 'grouped-top' : ''} ${isGroupedBottom ? 'grouped-bottom' : ''}`} style={{ position: 'relative' }}>
                 {!isMine && !isGroupedTop && <div className="message-sender" style={{ fontStyle: isPrivacyEnabled ? 'italic' : 'normal' }}>{displayName}</div>}
+                
+                {msg.replyTo && (
+                  <div className="message-reply-preview" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '4px', marginBottom: '4px', borderLeft: `3px solid ${isMine ? 'var(--primary)' : 'gray'}` }}>
+                    Replying to a message...
+                  </div>
+                )}
+                
                 <div className="message-bubble" style={{ whiteSpace: 'pre-wrap' }}>
                   {msg.text}
                 </div>
+                
+                {msg.reactions && Object.keys(msg.reactions).length > 0 && (
+                  <div style={{ display: 'flex', gap: '4px', marginTop: '4px', flexWrap: 'wrap' }}>
+                    {Object.entries(msg.reactions).map(([emoji, users]) => {
+                      if (!users || users.length === 0) return null;
+                      return (
+                        <div key={emoji} style={{ background: users.includes(currentUser) ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }} onClick={() => handleReact(msg.id, emoji)}>
+                          {emoji} <span style={{ fontSize: '0.7rem' }}>{users.length}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+                
                 <div className="message-info">
                   <span>{formatTime(msg.timestamp)}</span>
                   {isMine && (
                     isRead ? <CheckCheck size={14} color="#10b981" /> : <Check size={14} />
                   )}
                 </div>
+
+                {hoveredMessage === msg.id && (
+                  <div className={`message-hover-actions ${isMine ? 'mine' : 'other'}`} style={{ position: 'absolute', top: '-10px', [isMine ? 'left' : 'right']: '-100px', background: 'var(--panel-bg)', border: '1px solid var(--panel-border)', borderRadius: '20px', padding: '4px 8px', display: 'flex', gap: '8px', zIndex: 10, boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                    <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1rem' }} onClick={() => handleReact(msg.id, '👍')}>👍</button>
+                    <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1rem' }} onClick={() => handleReact(msg.id, '❤️')}>❤️</button>
+                    <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1rem' }} onClick={() => handleReact(msg.id, '😂')}>😂</button>
+                    <div style={{ width: '1px', background: 'var(--panel-border)', margin: '0 4px' }}></div>
+                    <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '0.8rem', display: 'flex', alignItems: 'center' }} onClick={() => setReplyingTo(msg)}>Reply</button>
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -570,8 +625,14 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         )}
       </div>
 
-      <div className="chat-input-area">
-        <form onSubmit={handleSend} className="chat-input-form">
+      <div className="chat-input-area" style={{ position: 'relative' }}>
+        {replyingTo && (
+          <div style={{ position: 'absolute', top: '-40px', left: '1rem', right: '1rem', background: 'var(--panel-bg)', border: '1px solid var(--panel-border)', borderBottom: 'none', padding: '8px 12px', borderRadius: '12px 12px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
+            <div style={{ color: 'var(--text-muted)' }}>Replying to <span style={{ color: 'var(--primary)', fontWeight: '600' }}>{replyingTo.sender}</span></div>
+            <button onClick={() => setReplyingTo(null)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>×</button>
+          </div>
+        )}
+        <form onSubmit={handleSend} className="chat-input-form" style={{ borderRadius: replyingTo ? '0 0 24px 24px' : '24px' }}>
           <textarea
             ref={textareaRef}
             placeholder="Start typing..."

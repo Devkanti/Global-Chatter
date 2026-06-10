@@ -180,6 +180,35 @@ io.on('connection', async (socket) => {
     }
   });
 
+  socket.on('message:react', async ({ messageId, emoji }) => {
+    try {
+      const msg = await Message.findById(messageId);
+      if (!msg) return;
+
+      if (!msg.reactions) msg.reactions = new Map();
+      const usersReacted = msg.reactions.get(emoji) || [];
+
+      if (usersReacted.includes(socket.username)) {
+        // Toggle off
+        const index = usersReacted.indexOf(socket.username);
+        usersReacted.splice(index, 1);
+      } else {
+        // Toggle on
+        usersReacted.push(socket.username);
+      }
+
+      msg.reactions.set(emoji, usersReacted);
+      await msg.save();
+
+      io.to(msg.roomId).emit('message:react_update', { 
+        messageId, 
+        reactions: Object.fromEntries(msg.reactions) 
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  });
+
   socket.on('user:update_profile', async (base64Image) => {
     await User.findByIdAndUpdate(socket.userId, { avatar: base64Image });
     io.emit('profile:updated', { username: socket.username, avatarUrl: base64Image });
@@ -313,7 +342,9 @@ io.on('connection', async (socket) => {
         text: messageData.text,
         id: messageData.id,
         type: messageData.type,
-        timestamp: messageData.timestamp
+        timestamp: messageData.timestamp,
+        replyTo: messageData.replyTo || null,
+        reactions: {}
       });
       await newMsg.save();
 

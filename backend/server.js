@@ -344,7 +344,8 @@ io.on('connection', async (socket) => {
         type: messageData.type,
         timestamp: messageData.timestamp,
         replyTo: messageData.replyTo || null,
-        reactions: {}
+        reactions: {},
+        audioData: messageData.audioData || null
       });
       await newMsg.save();
 

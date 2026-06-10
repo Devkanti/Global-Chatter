@@ -25,7 +25,7 @@ const messageSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['text', 'system'],
+    enum: ['text', 'system', 'audio'],
     default: 'text'
   },
   readBy: [{
@@ -39,6 +39,10 @@ const messageSchema = new mongoose.Schema({
     type: Map,
     of: [String], // emoji -> array of usernames
     default: {}
+  },
+  audioData: {
+    type: String, // Base64 audio
+    default: null
   }
 });
 

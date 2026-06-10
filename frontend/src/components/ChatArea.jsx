@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { socket } from '../socket';
-import { Send, Check, CheckCheck, Copy, CheckCircle2, LogOut, Users, PanelRightOpen, PanelRightClose, Bookmark, BookmarkCheck, Edit2, Menu, Globe, Hash, Video, Phone } from 'lucide-react';
+import { Send, Check, CheckCheck, Copy, CheckCircle2, LogOut, Users, PanelRightOpen, PanelRightClose, Bookmark, BookmarkCheck, Edit2, Menu, Globe, Hash, Video, Phone, Mic, Square, Play, Pause } from 'lucide-react';
 import { getAvatarGradient, censorText } from '../utils';
 import { encryptMessage, decryptMessage } from '../crypto';
 
@@ -12,11 +12,13 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
   const [copied, setCopied] = useState(false);
   const [warningMessage, setWarningMessage] = useState('');
   const [onlineUsers, setOnlineUsers] = useState([]);
-  const [isMembersOpen, setIsMembersOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
   const [hoveredMessage, setHoveredMessage] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -252,6 +254,74 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
 
   const handleReact = (messageId, emoji) => {
     socket.emit('message:react', { messageId, emoji });
+  };
+
+  const sendAudioMessage = async (base64Audio) => {
+    let messageData;
+    if (isGlobal) {
+      messageData = {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        sender: currentUser,
+        text: 'Audio Message',
+        type: 'audio',
+        audioData: base64Audio,
+        payload: null,
+        timestamp: Date.now(),
+        readBy: [],
+        replyTo: replyingTo?.id || null
+      };
+    } else {
+      const recipientPublicKeysJwkMap = {};
+      const usersToEncryptFor = new Set(onlineUsers);
+      usersToEncryptFor.add(currentUser);
+      for (const u of usersToEncryptFor) {
+        if (userPublicKeys && userPublicKeys[u]) recipientPublicKeysJwkMap[u] = userPublicKeys[u];
+      }
+      const encryptedPayload = await encryptMessage(base64Audio, recipientPublicKeysJwkMap);
+      messageData = {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        sender: currentUser,
+        text: "[Encrypted Audio]",
+        type: 'audio',
+        payload: encryptedPayload,
+        audioData: null, // Don't send raw audio if private
+        timestamp: Date.now(),
+        readBy: [],
+        replyTo: replyingTo?.id || null
+      };
+    }
+    socket.emit('message:send', messageData);
+    setReplyingTo(null);
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+      mediaRecorderRef.current.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => sendAudioMessage(reader.result);
+        stream.getTracks().forEach(t => t.stop());
+      };
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+    } catch (e) {
+      console.error(e);
+      alert('Microphone access denied or unavailable.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -572,9 +642,15 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
                   </div>
                 )}
                 
-                <div className="message-bubble" style={{ whiteSpace: 'pre-wrap' }}>
-                  {msg.text}
-                </div>
+                {msg.type === 'audio' ? (
+                  <div className="message-bubble audio-bubble">
+                    <audio controls src={msg.type === 'audio' ? (msg.audioData || msg.text) : ''} style={{ height: '36px', maxWidth: '200px' }} />
+                  </div>
+                ) : (
+                  <div className="message-bubble" style={{ whiteSpace: 'pre-wrap' }}>
+                    {msg.text}
+                  </div>
+                )}
                 
                 {msg.reactions && Object.keys(msg.reactions).length > 0 && (
                   <div style={{ display: 'flex', gap: '4px', marginTop: '4px', flexWrap: 'wrap' }}>
@@ -635,15 +711,30 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         <form onSubmit={handleSend} className="chat-input-form" style={{ borderRadius: replyingTo ? '0 0 24px 24px' : '24px' }}>
           <textarea
             ref={textareaRef}
-            placeholder="Start typing..."
+            placeholder={isRecording ? "Recording audio..." : "Start typing..."}
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             rows={1}
+            disabled={isRecording}
           />
-          <button type="submit" className="btn-icon" style={{ flexShrink: 0, marginBottom: '4px' }}>
-            <Send size={18} />
-          </button>
+          {isRecording ? (
+            <button type="button" onClick={stopRecording} className="btn-icon" style={{ flexShrink: 0, marginBottom: '4px', color: '#ef4444' }}>
+              <Square size={18} fill="currentColor" />
+            </button>
+          ) : (
+            <>
+              {inputValue.trim().length === 0 ? (
+                <button type="button" onClick={startRecording} className="btn-icon" style={{ flexShrink: 0, marginBottom: '4px' }}>
+                  <Mic size={18} />
+                </button>
+              ) : (
+                <button type="submit" className="btn-icon" style={{ flexShrink: 0, marginBottom: '4px' }}>
+                  <Send size={18} />
+                </button>
+              )}
+            </>
+          )}
         </form>
       </div>
     </div>

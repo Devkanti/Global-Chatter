@@ -1,0 +1,230 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-color: #2b2143;
+  --body-bg: #1e1633;
+  --panel-bg: rgba(255, 255, 255, 0.03);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --primary: #c4b5fd;
+  --primary-text: #1e1b4b;
+  --primary-hover: #ddd6fe;
+  --primary-glow: rgba(139, 92, 246, 0.3);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --success: #10b981;
+  --success-glow: rgba(16, 185, 129, 0.5);
+  --message-mine: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  --message-other: rgba(255, 255, 255, 0.05);
+  --glass-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --backdrop-blur: blur(24px);
+  --input-bg: rgba(15, 23, 42, 0.3);
+  --toggle-bg: rgba(0, 0, 0, 0.2);
+  --toggle-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+  --login-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] {
+  --bg-color: #e2e8f0;
+  --body-bg: #cbd5e1;
+  --panel-bg: rgba(255, 255, 255, 0.65);
+  --panel-border: rgba(0, 0, 0, 0.08);
+  --primary: #6d28d9;
+  --primary-text: #ffffff;
+  --primary-hover: #5b21b6;
+  --primary-glow: rgba(109, 40, 217, 0.2);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --success: #059669;
+  --success-glow: rgba(5, 150, 105, 0.3);
+  --message-mine: linear-gradient(135deg, #7c3aed, #5b21b6);
+  --message-other: #ffffff;
+  --glass-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --input-bg: rgba(255, 255, 255, 0.8);
+  --toggle-bg: rgba(95, 74, 139, 0.1);
+  --toggle-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+  --login-shadow: 0 25px 50px -12px rgba(109, 40, 217, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--body-bg);
+  background-image: 
+    radial-gradient(circle at 15% 50%, var(--primary-glow), transparent 50%),
+    radial-gradient(circle at 85% 30%, var(--panel-border), transparent 50%),
+    radial-gradient(circle at 50% 80%, var(--primary-glow), transparent 50%);
+  background-size: 200% 200%;
+  animation: floatBG 20s ease infinite alternate;
+  color: var(--text-main);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes floatBG {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+/* Glassmorphism utilities */
+.glass {
+  background: var(--panel-bg);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-panel {
+  border-radius: 24px;
+}
+
+.glass-pill {
+  border-radius: 9999px;
+}
+
+/* Button Reset & Styling */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--primary-text);
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px 0 var(--primary-glow);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 var(--primary-glow);
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--primary);
+  color: var(--primary-text);
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  background: var(--primary-hover);
+  transform: scale(1.05);
+}
+
+/* Inputs */
+input {
+  font-family: inherit;
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--panel-border);
+  color: var(--text-main);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-in {
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--text-muted);
+  border-radius: 50%;
+  display: inline-block;
+  animation: bounce 1.4s infinite ease-in-out both;
+  margin: 0 2px;
+}
+
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+.mine .message-bubble {
+  background: var(--message-mine);
+  border-bottom-right-radius: 4px;
+  color: #ffffff;
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.other .message-bubble {
+  background: var(--message-other);
+  border-bottom-left-radius: 4px;
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

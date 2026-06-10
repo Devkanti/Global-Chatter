@@ -403,3 +403,140 @@
 }
 
 /* When App.jsx conditionally renders it, we want it to slide. However, conditional rendering doesn't animate width from 0 to 320px easily if it's unmounted. We will handle width logic inline in App.jsx */
+
+/* ========================================================= */
+/*                   MOBILE RESPONSIVENESS                   */
+/* ========================================================= */
+
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 8px;
+}
+
+.mobile-close-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.mobile-backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    gap: 0;
+    height: 100dvh;
+    border-radius: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .glass-panel {
+    border-radius: 0;
+    border: none;
+  }
+
+  /* Chat Area overrides */
+  .chat-header {
+    padding: 1rem;
+  }
+  .chat-messages {
+    padding: 1rem;
+  }
+  .chat-input-area {
+    padding: 1rem;
+    padding-bottom: env(safe-area-inset-bottom, 1rem); /* iPhone notch support */
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Sidebar sliding drawers */
+  .sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    background: var(--body-bg); /* Opaque */
+    transform: translateX(-100%);
+    box-shadow: none;
+    border-right: 1px solid var(--panel-border);
+  }
+  .sidebar.mobile-open {
+    transform: translateX(0);
+    box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+  }
+
+  .friends-sidebar {
+    position: absolute !important;
+    right: 0;
+    top: 0;
+    z-index: 100;
+    background: var(--body-bg);
+    transform: translateX(100%);
+    box-shadow: none;
+    border-left: 1px solid var(--panel-border);
+  }
+  .friends-sidebar.mobile-open {
+    transform: translateX(0);
+    box-shadow: -5px 0 25px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop for closing drawers */
+  .mobile-backdrop.active {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(2px);
+    z-index: 90;
+    animation: fade-in 0.3s forwards;
+  }
+
+  /* Room Options Grid */
+  .room-options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Modals */
+  .modal-content {
+    width: 95%;
+    max-width: none;
+    padding: 1.5rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  /* Login padding */
+  .login-container {
+    padding: 2rem 1.5rem;
+  }
+
+  /* Hide custom badges on small screens if needed */
+  .room-card {
+    padding: 1.5rem 1rem;
+  }
+}

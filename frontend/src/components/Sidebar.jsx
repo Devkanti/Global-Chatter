@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Settings, LogOut, MessageSquare, Globe, Hash, Users, Bookmark, Edit2, X } from 'lucide-react';
 
-export default function Sidebar({ currentUser, activeRooms, savedRooms = [], currentRoom, customRoomNames, onSelectRoom, onOpenSettings, onLogout, onToggleFriends, showFriends, friendRequestsCount, onRenameRoom, onDeleteRoom }) {
+export default function Sidebar({ currentUser, activeRooms, savedRooms = [], currentRoom, customRoomNames, onSelectRoom, onOpenSettings, onLogout, onToggleFriends, showFriends, friendRequestsCount, onRenameRoom, onDeleteRoom, isMobileOpen, onCloseMobile }) {
   const displayRooms = Array.from(new Set([...savedRooms, ...activeRooms]));
   const [editingRoomId, setEditingRoomId] = useState(null);
   const [editingValue, setEditingValue] = useState('');
   const [hoveredRoomId, setHoveredRoomId] = useState(null);
   return (
-    <div className="sidebar glass glass-panel">
+    <div className={`sidebar glass glass-panel ${isMobileOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header" style={{ padding: '1.5rem 1rem 1rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 className="sidebar-title" style={{ padding: '0 0.5rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-main)' }}>
           <div style={{ background: 'var(--primary)', padding: '0.4rem', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px var(--primary-glow)' }}>
@@ -15,6 +15,9 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
           </div>
           Your Chats
         </h2>
+        <button className="mobile-close-btn" onClick={onCloseMobile}>
+          <X size={24} />
+        </button>
       </div>
       <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         {displayRooms.length === 0 ? (

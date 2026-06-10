@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { socket } from '../socket';
-import { Send, Check, CheckCheck, Copy, CheckCircle2, LogOut, Users, PanelRightOpen, PanelRightClose, Bookmark, BookmarkCheck, Edit2 } from 'lucide-react';
+import { Send, Check, CheckCheck, Copy, CheckCircle2, LogOut, Users, PanelRightOpen, PanelRightClose, Bookmark, BookmarkCheck, Edit2, Menu } from 'lucide-react';
 import { getAvatarGradient, censorText } from '../utils';
 import { encryptMessage, decryptMessage } from '../crypto';
 
-export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, userStatuses, userFriends, userPrivacyMode, userPublicKeys, myPrivateKey, onSelectUser, onToggleFriends, showFriends, onSaveRoom, isSaved, customRoomName, onRenameRoom }) {
+export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, userStatuses, userFriends, userPrivacyMode, userPublicKeys, myPrivateKey, onSelectUser, onToggleFriends, showFriends, onSaveRoom, isSaved, customRoomName, onRenameRoom, onToggleMobileSidebar }) {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [typingUsers, setTypingUsers] = useState(new Set());
@@ -328,7 +328,10 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
             }}
           />
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
+            <button className="mobile-menu-btn" onClick={onToggleMobileSidebar}>
+              <Menu size={24} />
+            </button>
             <h2 className="sidebar-title" 
               style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'default', margin: 0, fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-main)' }} 
             >

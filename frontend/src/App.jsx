@@ -29,7 +29,8 @@ function App() {
   const [userPrivacyMode, setUserPrivacyMode] = useState({});
   const [userPublicKeys, setUserPublicKeys] = useState({});
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [showFriends, setShowFriends] = useState(true);
+  const [showFriends, setShowFriends] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [selectedUserProfile, setSelectedUserProfile] = useState(null);
 
   const myPrivateKeyRef = useRef(null);
@@ -323,6 +324,15 @@ function App() {
   }
   return (
     <div className="app-layout animate-fade-in" style={{ position: 'relative' }}>
+      
+      {/* Mobile Backdrop */}
+      <div 
+        className={`mobile-backdrop ${showMobileSidebar || showFriends ? 'active' : ''}`}
+        onClick={() => {
+          setShowMobileSidebar(false);
+          setShowFriends(false);
+        }}
+      ></div>
 
       <Sidebar
         currentUser={username}
@@ -332,12 +342,17 @@ function App() {
         customRoomNames={customRoomNames}
         onRenameRoom={handleRenameRoom}
         onDeleteRoom={handleDeleteRoom}
-        onSelectRoom={joinRoom}
+        onSelectRoom={(rId) => {
+          joinRoom(rId);
+          setShowMobileSidebar(false);
+        }}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onLogout={handleLogout}
         onToggleFriends={() => setShowFriends(prev => !prev)}
         showFriends={showFriends}
         friendRequestsCount={friendRequests.length}
+        isMobileOpen={showMobileSidebar}
+        onCloseMobile={() => setShowMobileSidebar(false)}
       />
 
       {!roomId ? (
@@ -443,17 +458,21 @@ function App() {
           isSaved={savedRooms.includes(roomId)}
           customRoomName={customRoomNames[roomId]}
           onRenameRoom={handleRenameRoom}
+          onToggleMobileSidebar={() => setShowMobileSidebar(true)}
         />
       )}
 
-      <div style={{
-        width: showFriends ? '320px' : '0px',
-        opacity: showFriends ? 1 : 0,
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        overflow: 'hidden',
-        flexShrink: 0,
-        height: '100%'
-      }}>
+      <div 
+        className={`friends-sidebar ${showFriends ? 'mobile-open' : ''}`}
+        style={{
+          width: showFriends ? '320px' : '0px',
+          opacity: showFriends ? 1 : 0,
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          overflow: 'hidden',
+          flexShrink: 0,
+          height: '100%'
+        }}
+      >
         <div style={{ width: '320px', height: '100%' }}>
           <FriendsSidebar
             currentUser={username}

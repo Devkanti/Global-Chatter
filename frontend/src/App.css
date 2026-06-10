@@ -851,4 +851,49 @@
   .login-container {
     padding: 2rem 1rem;
   }
+
+  /* Call UI Mobile Adjustments */
+  .avatar-large {
+    width: 80px; height: 80px; font-size: 2rem;
+  }
+
+  .avatar-xl {
+    width: 100px; height: 100px; font-size: 2.5rem;
+  }
+
+  .caller-name {
+    font-size: 1.5rem;
+  }
+
+  .audio-caller-name {
+    font-size: 1.8rem;
+  }
+
+  .pulse-ring {
+    width: 80px; height: 80px;
+  }
+
+  .wave {
+    width: 100px; height: 100px;
+  }
+
+  .call-actions {
+    gap: 1rem;
+  }
+
+  .btn-accept, .btn-decline, .btn-end-call, .control-btn {
+    width: 50px; height: 50px;
+  }
+
+  .btn-accept svg, .btn-decline svg, .btn-end-call svg, .control-btn svg {
+    width: 20px; height: 20px;
+  }
+
+  .local-video-bg.pip-mode {
+    top: 1rem; right: 1rem; width: 100px; height: 140px; border-radius: 12px;
+  }
+
+  .call-controls-bar {
+    bottom: 1.5rem; padding: 0.75rem 1.5rem; gap: 1rem; width: 90%; justify-content: space-around;
+  }
 }

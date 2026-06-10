@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Phone, PhoneOff, PhoneCall, Mic, MicOff, Video, VideoOff } from 'lucide-react';
+import { Phone, PhoneOff, PhoneCall, Mic, MicOff, Video, VideoOff, Monitor, MonitorOff } from 'lucide-react';
 
 export default function CallOverlay({ 
   callState, 
@@ -12,8 +12,10 @@ export default function CallOverlay({
   onEnd,
   isMuted,
   isVideoOff,
+  isScreenSharing,
   onToggleMute,
-  onToggleVideo
+  onToggleVideo,
+  onToggleScreenShare
 }) {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -120,9 +122,14 @@ export default function CallOverlay({
               </button>
               
               {callType === 'video' && (
-                <button className={`control-btn ${isVideoOff ? 'disabled' : ''}`} onClick={onToggleVideo}>
-                  {isVideoOff ? <VideoOff size={20} /> : <Video size={20} />}
-                </button>
+                <>
+                  <button className={`control-btn ${isVideoOff ? 'disabled' : ''}`} onClick={onToggleVideo}>
+                    {isVideoOff ? <VideoOff size={20} /> : <Video size={20} />}
+                  </button>
+                  <button className={`control-btn ${isScreenSharing ? 'active' : ''}`} onClick={onToggleScreenShare}>
+                    {isScreenSharing ? <MonitorOff size={20} /> : <Monitor size={20} />}
+                  </button>
+                </>
               )}
 
               <button className="btn-end-call" onClick={onEnd}>

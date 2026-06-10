@@ -5,6 +5,7 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const connectDB = require('./db');
+const webpush = require('web-push');
 
 const User = require('./models/User');
 const Message = require('./models/Message');
@@ -18,6 +19,15 @@ connectDB();
 
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
+
+const pushRoutes = require('./routes/push');
+app.use('/push', pushRoutes);
+
+webpush.setVapidDetails(
+  'mailto:contact@devkantisarkar.com',
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY
+);
 
 const server = http.createServer(app);
 
@@ -363,6 +373,51 @@ io.on('connection', async (socket) => {
     }
     
     io.to(roomId).emit('message:receive', messageData);
+
+    // Push Notifications for offline users in private rooms
+    if (roomId !== 'global') {
+      try {
+        const room = await Room.findOne({ roomId });
+        if (room && room.participants) {
+          const onlineInRoom = roomUsers.get(roomId) || new Set();
+          const offlineUsers = room.participants.filter(p => !onlineInRoom.has(p) && p !== socket.username);
+          
+          for (const username of offlineUsers) {
+            const u = await User.findOne({ username });
+            if (u && u.pushSubscriptions && u.pushSubscriptions.length > 0) {
+              const payload = JSON.stringify({
+                title: `New message from ${socket.username}`,
+                body: messageData.type === 'audio' ? '🎤 Voice Note' : '🔒 Encrypted Message',
+                url: `${process.env.FRONTEND_URL}/`
+              });
+              
+              const validSubs = [];
+              for (const sub of u.pushSubscriptions) {
+                try {
+                  await webpush.sendNotification(sub, payload);
+                  validSubs.push(sub);
+                } catch (err) {
+                  if (err.statusCode === 410 || err.statusCode === 404) {
+                    // Subscription has expired or is no longer valid
+                  } else {
+                    validSubs.push(sub);
+                    console.error('Push error:', err);
+                  }
+                }
+              }
+              
+              // Clean up expired subscriptions
+              if (validSubs.length !== u.pushSubscriptions.length) {
+                u.pushSubscriptions = validSubs;
+                await u.save();
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Push notification trigger error:', err);
+      }
+    }
   });
 
   socket.on('typing:start', () => {

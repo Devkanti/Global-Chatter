@@ -19,6 +19,7 @@ export function useWebRTC(currentUser) {
   
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
 
   const pcRef = useRef(null);
 
@@ -37,6 +38,7 @@ export function useWebRTC(currentUser) {
     setActiveRoomId('');
     setIsMuted(false);
     setIsVideoOff(false);
+    setIsScreenSharing(false);
   }, [localStream]);
 
   const initLocalStream = async (type) => {
@@ -131,6 +133,44 @@ export function useWebRTC(currentUser) {
     }
   };
 
+  const toggleScreenShare = async () => {
+    if (isScreenSharing) {
+      try {
+        const cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const cameraTrack = cameraStream.getVideoTracks()[0];
+        
+        if (pcRef.current) {
+          const sender = pcRef.current.getSenders().find(s => s.track && s.track.kind === 'video');
+          if (sender) sender.replaceTrack(cameraTrack);
+        }
+
+        setIsScreenSharing(false);
+        setLocalStream(new MediaStream([cameraTrack, ...localStream.getAudioTracks()]));
+      } catch (err) {
+        console.error('Failed to revert to camera:', err);
+      }
+    } else {
+      try {
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        const screenTrack = screenStream.getVideoTracks()[0];
+
+        if (pcRef.current) {
+          const sender = pcRef.current.getSenders().find(s => s.track && s.track.kind === 'video');
+          if (sender) sender.replaceTrack(screenTrack);
+        }
+
+        screenTrack.onended = () => {
+          toggleScreenShare(); // Switch back to camera if stopped via browser UI
+        };
+
+        setIsScreenSharing(true);
+        setLocalStream(new MediaStream([screenTrack, ...localStream.getAudioTracks()]));
+      } catch (err) {
+        console.error('Failed to share screen:', err);
+      }
+    }
+  };
+
   // SOCKET LISTENERS
   useEffect(() => {
     const handleIncoming = ({ roomId, type, callerName }) => {
@@ -217,6 +257,8 @@ export function useWebRTC(currentUser) {
     declineCall,
     endCall,
     toggleMute,
-    toggleVideo
+    toggleVideo,
+    toggleScreenShare,
+    isScreenSharing
   };
 }

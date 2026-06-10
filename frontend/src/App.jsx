@@ -97,6 +97,26 @@ function App() {
     };
   }, []);
 
+  const subscribeToPushNotifications = async (uname) => {
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      try {
+        const registration = await navigator.serviceWorker.register('/sw.js');
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: 'BBwq-90TRkMn6fvCBdT_1RLP9ZXzgtMCnoMFxOq8bBTtQNbqcm0hE0R3pnXrN0kk1BfRmCWKiVubKSspmbjChcg'
+        });
+        
+        await fetch(`${BACKEND_URL}/push/subscribe`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: uname, subscription })
+        });
+      } catch (err) {
+        console.error('Push registration failed:', err);
+      }
+    }
+  };
+
   const finishLoginSetup = async (usernameValue, token) => {
     localStorage.setItem('chat_token', token);
     
@@ -117,6 +137,13 @@ function App() {
     socket.auth = { token };
     socket.connect();
     socket.emit('user:login', { publicKey: publicKeyJwk });
+
+    // Request push notification permissions and subscribe
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        subscribeToPushNotifications(usernameValue);
+      }
+    });
   };
 
   const handleAuthSubmit = async (e) => {
@@ -635,6 +662,8 @@ function App() {
         isVideoOff={webrtc.isVideoOff}
         onToggleMute={webrtc.toggleMute}
         onToggleVideo={webrtc.toggleVideo}
+        isScreenSharing={webrtc.isScreenSharing}
+        onToggleScreenShare={webrtc.toggleScreenShare}
       />
     </div>
   );

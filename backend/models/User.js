@@ -61,7 +61,10 @@ const userSchema = new mongoose.Schema({
   suspendedUntil: {
     type: Date,
     default: null
-  }
+  },
+  pushSubscriptions: [{
+    type: Object
+  }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

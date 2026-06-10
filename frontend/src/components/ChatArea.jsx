@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { socket } from '../socket';
-import { Send, Check, CheckCheck, Copy, CheckCircle2, LogOut, Users, PanelRightOpen, PanelRightClose, Bookmark, BookmarkCheck, Edit2, Menu, Globe, Hash } from 'lucide-react';
+import { Send, Check, CheckCheck, Copy, CheckCircle2, LogOut, Users, PanelRightOpen, PanelRightClose, Bookmark, BookmarkCheck, Edit2, Menu, Globe, Hash, Video, Phone } from 'lucide-react';
 import { getAvatarGradient, censorText } from '../utils';
 import { encryptMessage, decryptMessage } from '../crypto';
 
-export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, userStatuses, userFriends, userPrivacyMode, userPublicKeys, myPrivateKey, onSelectUser, onToggleFriends, showFriends, onSaveRoom, isSaved, customRoomName, onRenameRoom, onToggleMobileSidebar }) {
+export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, userStatuses, userFriends, userPrivacyMode, userPublicKeys, myPrivateKey, onSelectUser, onToggleFriends, showFriends, onSaveRoom, isSaved, customRoomName, onRenameRoom, onToggleMobileSidebar, onInitiateCall }) {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [typingUsers, setTypingUsers] = useState(new Set());
@@ -359,6 +359,17 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
               >
                 {isSaved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
               </button>
+
+              {isFriendRoom && (
+                <>
+                  <button className="control-btn" onClick={() => onInitiateCall('audio', roomDisplayName)} title="Audio Call" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.5rem' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text-main)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
+                    <Phone size={20} />
+                  </button>
+                  <button className="control-btn" onClick={() => onInitiateCall('video', roomDisplayName)} title="Video Call" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.5rem' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text-main)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
+                    <Video size={20} />
+                  </button>
+                </>
+              )}
 
               <button 
                 onClick={copyRoomCode}

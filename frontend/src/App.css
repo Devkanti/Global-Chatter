@@ -405,6 +405,196 @@
 /* When App.jsx conditionally renders it, we want it to slide. However, conditional rendering doesn't animate width from 0 to 320px easily if it's unmounted. We will handle width logic inline in App.jsx */
 
 /* ========================================================= */
+/*                   WEBRTC CALL UI                          */
+/* ========================================================= */
+
+.call-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 10, 25, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.call-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.incoming-call-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.avatar-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+}
+
+.avatar-xl {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.2);
+}
+
+.caller-name {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.call-status {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-bottom: 3rem;
+}
+
+.call-actions {
+  display: flex;
+  gap: 2rem;
+}
+
+.btn-accept, .btn-decline, .btn-end-call, .control-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.btn-accept {
+  background: var(--success);
+  box-shadow: 0 0 20px var(--success-glow);
+}
+.btn-accept:hover { transform: scale(1.1); }
+
+.btn-decline, .btn-end-call {
+  background: #ef4444;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+}
+.btn-decline:hover, .btn-end-call:hover { transform: scale(1.1); }
+
+.connected-call-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: #000;
+}
+
+.remote-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.audio-only-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 10, 25, 0.95);
+}
+
+.local-video {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 120px;
+  height: 180px;
+  background: #111;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.2);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  z-index: 10;
+}
+.local-video.hidden {
+  display: none;
+}
+
+.call-controls-bar {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1.5rem;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  padding: 1rem 2rem;
+  border-radius: 999px;
+  z-index: 10;
+}
+
+.control-btn {
+  background: rgba(255, 255, 255, 0.15);
+}
+.control-btn:hover { background: rgba(255, 255, 255, 0.25); }
+.control-btn.disabled {
+  background: rgba(255, 255, 255, 0.5);
+  color: #333;
+}
+
+.pulse-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
+  animation: pulse-ring 2s infinite;
+  z-index: 1;
+}
+
+@keyframes pulse-ring {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+}
+
+/* ========================================================= */
 /*                   MOBILE RESPONSIVENESS                   */
 /* ========================================================= */
 

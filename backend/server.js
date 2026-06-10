@@ -289,6 +289,23 @@ io.on('connection', async (socket) => {
     }
   });
 
+  // WebRTC Call Signaling
+  socket.on('call:initiate', ({ roomId, type }) => {
+    socket.to(roomId).emit('call:incoming', { roomId, type, callerName: socket.username });
+  });
+  socket.on('call:accept', ({ roomId }) => {
+    socket.to(roomId).emit('call:accepted');
+  });
+  socket.on('call:decline', ({ roomId }) => {
+    socket.to(roomId).emit('call:declined');
+  });
+  socket.on('call:signal', ({ roomId, signal }) => {
+    socket.to(roomId).emit('call:signal', { signal });
+  });
+  socket.on('call:end', ({ roomId }) => {
+    socket.to(roomId).emit('call:ended');
+  });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
     

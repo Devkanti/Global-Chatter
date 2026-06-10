@@ -4,9 +4,11 @@ import FriendsSidebar from './components/FriendsSidebar';
 import ChatArea from './components/ChatArea';
 import SettingsModal from './components/SettingsModal';
 import UserProfileModal from './components/UserProfileModal';
-import { MessageSquare, Globe, KeyRound, Plus, Settings, Sun, Moon, PanelRightClose, PanelRightOpen, ArrowRight, Sparkles, User, Mail, Lock } from 'lucide-react';
+import CallOverlay from './components/CallOverlay';
+import { MessageSquare, Globe, KeyRound, Plus, Settings, Sun, Moon, PanelRightClose, PanelRightOpen, ArrowRight, Sparkles, User, Mail, Lock, User as UserIcon } from 'lucide-react';
 import { initCrypto } from './crypto';
 import { socket, BACKEND_URL } from './socket';
+import { useWebRTC } from './useWebRTC';
 import './App.css';
 
 function App() {
@@ -44,6 +46,8 @@ function App() {
 
   const [myPrivateKey, setMyPrivateKey] = useState(null);
   const myPublicKeyJwkRef = useRef(null);
+
+  const webrtc = useWebRTC(username);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -561,6 +565,7 @@ function App() {
           customRoomName={customRoomNames[roomId]}
           onRenameRoom={handleRenameRoom}
           onToggleMobileSidebar={() => setShowMobileSidebar(true)}
+          onInitiateCall={(type, targetName) => webrtc.initiateCall(roomId, targetName, type)}
         />
       )}
 
@@ -615,6 +620,21 @@ function App() {
           setSelectedUserProfile(null);
           joinRoom(newRoomId);
         }}
+      />
+
+      <CallOverlay 
+        callState={webrtc.callState}
+        callType={webrtc.callType}
+        callerName={webrtc.callerName}
+        localStream={webrtc.localStream}
+        remoteStream={webrtc.remoteStream}
+        onAccept={webrtc.acceptCall}
+        onDecline={webrtc.declineCall}
+        onEnd={webrtc.endCall}
+        isMuted={webrtc.isMuted}
+        isVideoOff={webrtc.isVideoOff}
+        onToggleMute={webrtc.toggleMute}
+        onToggleVideo={webrtc.toggleVideo}
       />
     </div>
   );

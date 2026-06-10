@@ -362,14 +362,14 @@ function App() {
             <form onSubmit={handleVerifyOTP} className="login-form" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
                 <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem' }}>OTP Code</label>
-                <div style={{ position: 'relative' }}>
-                  <KeyRound size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.7 }} />
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <KeyRound size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1.25rem', opacity: 0.7 }} />
                   <input
                     type="text"
                     placeholder="123456"
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    style={{ paddingLeft: '2.5rem', letterSpacing: '4px', textAlign: 'center', fontSize: '1.2rem', fontWeight: '700' }}
+                    style={{ paddingLeft: '3rem', letterSpacing: '4px', textAlign: 'center', fontSize: '1.2rem', fontWeight: '700', width: '100%' }}
                     autoFocus
                   />
                 </div>
@@ -382,27 +382,27 @@ function App() {
             <form onSubmit={handleAuthSubmit} className="login-form" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
                 <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem' }}>Email</label>
-                <div style={{ position: 'relative' }}>
-                  <Mail size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.7 }} />
-                  <input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} style={{ paddingLeft: '2.5rem' }} required autoFocus />
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <Mail size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1.25rem', opacity: 0.7 }} />
+                  <input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} style={{ paddingLeft: '3rem', width: '100%' }} required autoFocus />
                 </div>
               </div>
 
               {isSignUp && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
                   <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem' }}>Username</label>
-                  <div style={{ position: 'relative' }}>
-                    <User size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.7 }} />
-                    <input type="text" placeholder="username" value={username} onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20))} style={{ paddingLeft: '2.5rem' }} required />
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <UserIcon size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1.25rem', opacity: 0.7 }} />
+                    <input type="text" placeholder="username" value={username} onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20))} style={{ paddingLeft: '3rem', width: '100%' }} required />
                   </div>
                 </div>
               )}
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
                 <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem' }}>Password</label>
-                <div style={{ position: 'relative' }}>
-                  <Lock size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.7 }} />
-                  <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={{ paddingLeft: '2.5rem' }} required minLength={6} />
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <Lock size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1.25rem', opacity: 0.7 }} />
+                  <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={{ paddingLeft: '3rem', width: '100%' }} required minLength={6} />
                 </div>
               </div>
               

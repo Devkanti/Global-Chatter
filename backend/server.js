@@ -23,11 +23,15 @@ app.use('/auth', authRoutes);
 const pushRoutes = require('./routes/push');
 app.use('/push', pushRoutes);
 
-webpush.setVapidDetails(
-  'mailto:contact@devkantisarkar.com',
-  process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
-);
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    'mailto:contact@devkantisarkar.com',
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
+} else {
+  console.warn('VAPID keys are missing from environment variables. Push notifications will be disabled.');
+}
 
 const server = http.createServer(app);
 

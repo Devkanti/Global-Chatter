@@ -50,9 +50,11 @@ export default function CallOverlay({
         {/* Incoming Call Screen */}
         {callState === 'incoming' && (
           <div className={`incoming-call-screen ${callType === 'video' ? 'glass-overlay' : ''}`}>
-            <div className="pulse-ring"></div>
-            <div className="pulse-ring delay-1"></div>
-            <div className="avatar-large">{callerName?.[0]?.toUpperCase()}</div>
+            <div className="avatar-wrapper">
+              <div className="pulse-ring"></div>
+              <div className="pulse-ring delay-1"></div>
+              <div className="avatar-large">{callerName?.[0]?.toUpperCase()}</div>
+            </div>
             <h2 className="caller-name">{callerName}</h2>
             <p className="call-status">Incoming {callType} call...</p>
             
@@ -70,9 +72,11 @@ export default function CallOverlay({
         {/* Ringing (Outgoing) Screen */}
         {callState === 'ringing' && (
           <div className={`incoming-call-screen ${callType === 'video' ? 'glass-overlay' : ''}`}>
-            <div className="pulse-ring"></div>
-            <div className="pulse-ring delay-1"></div>
-            <div className="avatar-large">{callerName?.[0]?.toUpperCase()}</div>
+            <div className="avatar-wrapper">
+              <div className="pulse-ring"></div>
+              <div className="pulse-ring delay-1"></div>
+              <div className="avatar-large">{callerName?.[0]?.toUpperCase()}</div>
+            </div>
             <h2 className="caller-name">Calling {callerName}...</h2>
             <p className="call-status">Ringing...</p>
             

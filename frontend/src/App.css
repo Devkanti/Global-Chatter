@@ -488,19 +488,31 @@
     box-shadow: 5px 0 25px rgba(0,0,0,0.5);
   }
 
-  .friends-sidebar {
+  .friends-sidebar-wrapper {
     position: absolute !important;
     right: 0;
     top: 0;
+    bottom: 0;
     z-index: 100;
-    background: var(--body-bg);
+    width: 320px !important;
+    opacity: 1 !important;
     transform: translateX(100%);
-    box-shadow: none;
-    border-left: 1px solid var(--panel-border);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .friends-sidebar.mobile-open {
+  .friends-sidebar-wrapper.mobile-open {
     transform: translateX(0);
     box-shadow: -5px 0 25px rgba(0,0,0,0.5);
+  }
+  
+  .friends-sidebar {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    transform: none !important;
+    box-shadow: none !important;
+    background: var(--body-bg);
+    border-left: 1px solid var(--panel-border);
+    border-radius: 0;
   }
 
   /* Backdrop for closing drawers */

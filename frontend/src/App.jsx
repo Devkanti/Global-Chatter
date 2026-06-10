@@ -463,7 +463,7 @@ function App() {
       )}
 
       <div 
-        className={`friends-sidebar ${showFriends ? 'mobile-open' : ''}`}
+        className={`friends-sidebar-wrapper ${showFriends ? 'mobile-open' : ''}`}
         style={{
           width: showFriends ? '320px' : '0px',
           opacity: showFriends ? 1 : 0,

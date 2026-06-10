@@ -36,10 +36,22 @@ export default function CallOverlay({
     <div className="call-overlay animate-fade-in">
       <div className="call-container">
         
+        {/* Local Video Background (for Video Calls) */}
+        {callType === 'video' && localStream && (
+          <video 
+            ref={localVideoRef} 
+            className={`local-video-bg ${callState === 'connected' ? 'pip-mode' : 'fullscreen-mode'} ${isVideoOff ? 'hidden' : ''}`} 
+            autoPlay 
+            playsInline 
+            muted 
+          />
+        )}
+
         {/* Incoming Call Screen */}
         {callState === 'incoming' && (
-          <div className="incoming-call-screen">
+          <div className={`incoming-call-screen ${callType === 'video' ? 'glass-overlay' : ''}`}>
             <div className="pulse-ring"></div>
+            <div className="pulse-ring delay-1"></div>
             <div className="avatar-large">{callerName?.[0]?.toUpperCase()}</div>
             <h2 className="caller-name">{callerName}</h2>
             <p className="call-status">Incoming {callType} call...</p>
@@ -49,7 +61,7 @@ export default function CallOverlay({
                 <PhoneOff size={24} />
               </button>
               <button className="btn-accept" onClick={onAccept}>
-                <Phone size={24} />
+                {callType === 'video' ? <Video size={24} /> : <Phone size={24} />}
               </button>
             </div>
           </div>
@@ -57,7 +69,9 @@ export default function CallOverlay({
 
         {/* Ringing (Outgoing) Screen */}
         {callState === 'ringing' && (
-          <div className="incoming-call-screen">
+          <div className={`incoming-call-screen ${callType === 'video' ? 'glass-overlay' : ''}`}>
+            <div className="pulse-ring"></div>
+            <div className="pulse-ring delay-1"></div>
             <div className="avatar-large">{callerName?.[0]?.toUpperCase()}</div>
             <h2 className="caller-name">Calling {callerName}...</h2>
             <p className="call-status">Ringing...</p>
@@ -83,22 +97,16 @@ export default function CallOverlay({
               />
             ) : (
               <div className="audio-only-screen">
+                <div className="audio-waves">
+                  <div className="wave"></div>
+                  <div className="wave delay-1"></div>
+                  <div className="wave delay-2"></div>
+                </div>
                 <div className="avatar-xl">{callerName?.[0]?.toUpperCase()}</div>
-                <h2>{callerName}</h2>
-                <p>00:00</p>
+                <h2 className="audio-caller-name">{callerName}</h2>
+                <p className="audio-call-duration">Connected</p>
                 <audio ref={remoteVideoRef} autoPlay />
               </div>
-            )}
-
-            {/* Local Video Mini-Window */}
-            {callType === 'video' && localStream && (
-              <video 
-                ref={localVideoRef} 
-                className={`local-video ${isVideoOff ? 'hidden' : ''}`} 
-                autoPlay 
-                playsInline 
-                muted 
-              />
             )}
 
             {/* Call Controls */}

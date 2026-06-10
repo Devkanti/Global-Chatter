@@ -360,16 +360,12 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
                 {isSaved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
               </button>
 
-              {isFriendRoom && (
-                <>
-                  <button className="control-btn" onClick={() => onInitiateCall('audio', roomDisplayName)} title="Audio Call" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.5rem' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text-main)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
-                    <Phone size={20} />
-                  </button>
-                  <button className="control-btn" onClick={() => onInitiateCall('video', roomDisplayName)} title="Video Call" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.5rem' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text-main)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
-                    <Video size={20} />
-                  </button>
-                </>
-              )}
+              <button className="control-btn" onClick={() => onInitiateCall('audio', roomDisplayName)} title="Audio Call" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.5rem' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text-main)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
+                <Phone size={20} />
+              </button>
+              <button className="control-btn" onClick={() => onInitiateCall('video', roomDisplayName)} title="Video Call" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.5rem' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text-main)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
+                <Video size={20} />
+              </button>
 
               <button 
                 onClick={copyRoomCode}

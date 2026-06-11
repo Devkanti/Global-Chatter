@@ -22,10 +22,11 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
   const [replyingTo, setReplyingTo] = useState(null);
   const [hoveredMessage, setHoveredMessage] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [recordingStream, setRecordingStream] = useState(null);
   const [recordedAudioBase64, setRecordedAudioBase64] = useState(null);
+  const [recordingTime, setRecordingTime] = useState(0);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
+  const recordingTimerRef = useRef(null);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -335,6 +336,10 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
       };
       mediaRecorderRef.current.start();
       setIsRecording(true);
+      setRecordingTime(0);
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
     } catch (e) {
       console.error(e);
       window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Microphone access denied or unavailable.' }));
@@ -346,11 +351,25 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       setRecordingStream(null);
+      if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
     }
   };
 
   const cancelRecording = () => {
     setRecordedAudioBase64(null);
+    setIsRecording(false);
+    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+  };
+
+  const discardRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.onstop = null; // Prevent saving
+      mediaRecorderRef.current.stop();
+      if (recordingStream) recordingStream.getTracks().forEach(t => t.stop());
+      setIsRecording(false);
+      setRecordingStream(null);
+      if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -358,6 +377,10 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
       e.preventDefault();
       handleSend(e);
     }
+  };
+
+  const formatRecordingTime = (secs) => {
+    return `${Math.floor(secs / 60)}:${(secs % 60).toString().padStart(2, '0')}`;
   };
 
   const formatTime = (ts) => {
@@ -792,9 +815,14 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
               </button>
             </div>
           ) : isRecording ? (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0 0.5rem' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 1.5s infinite' }} />
-              <span style={{ fontSize: '0.85rem', color: '#ef4444', fontWeight: '600' }}>Recording</span>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0 0.5rem' }}>
+              <button type="button" onClick={discardRecording} className="btn-icon" style={{ flexShrink: 0, color: 'var(--text-muted)' }}>
+                <Trash2 size={18} />
+              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981', fontWeight: '500', fontSize: '0.9rem', width: '45px' }}>
+                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 1.5s infinite' }} />
+                {formatRecordingTime(recordingTime)}
+              </div>
               <div style={{ flex: 1 }}>
                 <AudioVisualizer stream={recordingStream} />
               </div>
@@ -812,8 +840,8 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
 
           {!recordedAudioBase64 && (
             isRecording ? (
-              <button type="button" onClick={stopRecording} className="btn-icon" style={{ flexShrink: 0, marginBottom: '4px', color: '#ef4444' }}>
-                <Square size={18} fill="currentColor" />
+              <button type="button" onClick={stopRecording} className="btn-icon" style={{ flexShrink: 0, marginBottom: '4px', color: '#10b981' }}>
+                <Send size={18} />
               </button>
             ) : (
               <>

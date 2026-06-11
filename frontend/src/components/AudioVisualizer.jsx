@@ -33,35 +33,23 @@ export default function AudioVisualizer({ stream }) {
         analyser.getByteFrequencyData(dataArray);
         canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
-        // Calculate actual width needed for bars (use middle frequencies mostly)
-        const activeBars = Math.floor(bufferLength * 0.7); 
-        const barWidth = (WIDTH / activeBars) * 1.2;
+        const activeBars = Math.floor(WIDTH / 6); // 6px per bar (4px width + 2px gap)
+        const barWidth = 3;
         let x = 0;
 
-        // Create glowing gradient
-        const gradient = canvasCtx.createLinearGradient(0, 0, WIDTH, 0);
-        gradient.addColorStop(0, '#a855f7'); // purple
-        gradient.addColorStop(0.5, '#ec4899'); // pink
-        gradient.addColorStop(1, '#f43f5e'); // rose
-
         for (let i = 0; i < activeBars; i++) {
-          // Add a subtle wave base + actual volume
-          const volume = dataArray[i];
+          const volume = dataArray[i * Math.floor(bufferLength / activeBars)] || 0;
           const normalizedVol = volume / 255;
-          let barHeight = (normalizedVol * HEIGHT * 0.8) + 2; 
+          let barHeight = (normalizedVol * HEIGHT * 0.9) + 4; 
 
-          // Apply some easing so low volumes still show a small bump
           if (barHeight < 4) barHeight = 4;
 
-          canvasCtx.fillStyle = gradient;
-          canvasCtx.shadowBlur = 8;
-          canvasCtx.shadowColor = gradient;
-          
+          canvasCtx.fillStyle = '#10b981'; // WhatsApp green color
           canvasCtx.beginPath();
-          canvasCtx.roundRect(x, HEIGHT / 2 - barHeight / 2, barWidth - 2, barHeight, (barWidth - 2) / 2);
+          canvasCtx.roundRect(x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barWidth / 2);
           canvasCtx.fill();
 
-          x += barWidth;
+          x += 6; // 3px bar + 3px gap
         }
       };
 

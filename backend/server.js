@@ -201,7 +201,7 @@ io.on('connection', async (socket) => {
 
   socket.on('message:react', async ({ messageId, emoji }) => {
     try {
-      const msg = await Message.findById(messageId);
+      const msg = await Message.findOne({ id: messageId });
       if (!msg) return;
 
       if (!msg.reactions) msg.reactions = new Map();

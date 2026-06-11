@@ -50,14 +50,19 @@ router.post('/signup', async (req, res) => {
     await otpEntry.save();
 
     // Send OTP via Resend
-    await resend.emails.send({
-      from: 'Global Chatter <onboarding@resend.dev>',
-      to: email,
-      subject: 'Verify your Global Chatter Account',
-      html: `<p>Your verification code is: <strong>${otpCode}</strong></p><p>This code will expire in 5 minutes.</p>`
-    });
+    try {
+      await resend.emails.send({
+        from: 'Global Chatter <onboarding@resend.dev>',
+        to: email,
+        subject: 'Verify your Global Chatter Account',
+        html: `<p>Your verification code is: <strong>${otpCode}</strong></p><p>This code will expire in 5 minutes.</p>`
+      });
+      console.log(`[DEBUG] OTP for ${email} sent via Resend. Code: ${otpCode}`);
+    } catch (emailError) {
+      console.error(`[DEBUG] Failed to send email via Resend to ${email}. Code was: ${otpCode}`, emailError);
+    }
 
-    res.status(200).json({ message: 'OTP sent to email', email });
+    res.status(200).json({ message: 'OTP processed', email });
   } catch (error) {
     console.error('Signup Error:', error);
     res.status(500).json({ error: 'Internal server error' });

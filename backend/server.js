@@ -286,7 +286,7 @@ io.on('connection', async (socket) => {
       // Update historical messages so sender matches
       await Message.updateMany({ sender: oldName }, { $set: { sender: newName } });
       
-      socket.emit('name_changed:success', newName);
+      socket.emit('name_changed:success', { oldName, newName });
       
       io.emit('global:presence', Array.from(globalUsers));
       if (socket.roomId) {

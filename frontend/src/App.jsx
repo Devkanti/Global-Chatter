@@ -74,8 +74,33 @@ function App() {
       setUserStatuses(statuses);
     });
 
-    socket.on('name_changed:success', (newName) => {
+    socket.on('name_changed:success', ({ oldName, newName }) => {
       setUsername(newName);
+      setUserProfiles(prev => {
+        const updated = { ...prev };
+        if (updated[oldName]) {
+          updated[newName] = updated[oldName];
+          delete updated[oldName];
+        }
+        return updated;
+      });
+      // Also update statuses and public keys to avoid them disappearing
+      setUserStatuses(prev => {
+        const updated = { ...prev };
+        if (updated[oldName]) {
+          updated[newName] = updated[oldName];
+          delete updated[oldName];
+        }
+        return updated;
+      });
+      setUserPublicKeys(prev => {
+        const updated = { ...prev };
+        if (updated[oldName]) {
+          updated[newName] = updated[oldName];
+          delete updated[oldName];
+        }
+        return updated;
+      });
     });
 
     socket.on('profile:updated', ({ username, avatarUrl }) => {

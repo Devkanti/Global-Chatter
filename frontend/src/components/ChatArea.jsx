@@ -687,11 +687,25 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
               <div className={`message-wrapper ${isMine ? 'mine' : 'other'} ${isGroupedTop ? 'grouped-top' : ''} ${isGroupedBottom ? 'grouped-bottom' : ''}`} style={{ position: 'relative' }}>
                 {!isMine && !isGroupedTop && <div className="message-sender" style={{ fontStyle: isPrivacyEnabled ? 'italic' : 'normal' }}>{displayName}</div>}
                 
-                {msg.replyTo && (
-                  <div className="message-reply-preview">
-                    Replying to a message...
-                  </div>
-                )}
+                {msg.replyTo && (() => {
+                  const repliedMsg = messages.find(m => m.id === msg.replyTo);
+                  let previewText = 'Replying to a message...';
+                  if (repliedMsg) {
+                    if (repliedMsg.type === 'audio') {
+                      previewText = '🎤 Audio Message';
+                    } else if (repliedMsg.text) {
+                      previewText = repliedMsg.text.length > 50 ? repliedMsg.text.substring(0, 50) + '...' : repliedMsg.text;
+                    }
+                  }
+                  return (
+                    <div className="message-reply-preview">
+                      <span style={{ fontWeight: 'bold', marginRight: '5px', color: 'var(--primary)' }}>
+                        {repliedMsg ? repliedMsg.sender : 'Unknown'}:
+                      </span>
+                      {previewText}
+                    </div>
+                  );
+                })()}
                 
                 {msg.type === 'audio' ? (
                   <div className="message-bubble audio-bubble" style={{ padding: '0', background: 'transparent', border: 'none' }}>

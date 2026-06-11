@@ -1076,3 +1076,8 @@
 .custom-audio-slider:active::-moz-range-thumb {
   transform: scale(1.2);
 }
+
+.room-input-group:focus-within {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px var(--primary-glow) !important;
+}

@@ -575,6 +575,7 @@ function App() {
                 placeholder="ROOM CODE"
                 value={roomIdInput}
                 onChange={(e) => setRoomIdInput(e.target.value.toUpperCase())}
+                className="search-input-no-ring"
                 style={{ 
                   flex: 1, 
                   background: 'transparent', 

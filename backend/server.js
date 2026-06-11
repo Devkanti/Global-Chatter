@@ -205,7 +205,9 @@ io.on('connection', async (socket) => {
       if (!msg) return;
 
       if (!msg.reactions) msg.reactions = new Map();
-      const usersReacted = msg.reactions.get(emoji) || [];
+      let usersReacted = msg.reactions.get(emoji) || [];
+      // Create a fresh copy of the array so Mongoose detects the change
+      usersReacted = [...usersReacted];
 
       if (usersReacted.includes(socket.username)) {
         // Toggle off
@@ -217,6 +219,7 @@ io.on('connection', async (socket) => {
       }
 
       msg.reactions.set(emoji, usersReacted);
+      msg.markModified('reactions');
       await msg.save();
 
       io.to(msg.roomId).emit('message:react_update', { 

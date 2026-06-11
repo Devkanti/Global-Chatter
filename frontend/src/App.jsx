@@ -349,7 +349,7 @@ function App() {
 
   if (!isLoggedIn) {
     return (
-      <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'radial-gradient(circle at center, #2a2a4a 0%, var(--body-bg) 100%)', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
         {/* Ambient background glows */}
         <div style={{ position: 'absolute', width: '60vw', height: '60vw', maxWidth: '600px', maxHeight: '600px', background: 'rgba(139, 92, 246, 0.15)', filter: 'blur(100px)', borderRadius: '50%', top: '-20%', left: '-10%', zIndex: 0, pointerEvents: 'none' }}></div>
         <div style={{ position: 'absolute', width: '50vw', height: '50vw', maxWidth: '500px', maxHeight: '500px', background: 'rgba(59, 130, 246, 0.15)', filter: 'blur(100px)', borderRadius: '50%', bottom: '-20%', right: '-10%', zIndex: 0, pointerEvents: 'none' }}></div>

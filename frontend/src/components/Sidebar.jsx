@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Settings, LogOut, MessageSquare, Globe, Hash, Users, Bookmark, Edit2, X } from 'lucide-react';
+import { Settings, LogOut, MessageSquare, Globe, Hash, Users, Bookmark, Edit2, X, Plus } from 'lucide-react';
 
-export default function Sidebar({ currentUser, activeRooms, savedRooms = [], currentRoom, customRoomNames, onSelectRoom, onOpenSettings, onLogout, onToggleFriends, showFriends, friendRequestsCount, onRenameRoom, onDeleteRoom, isMobileOpen, onCloseMobile }) {
+export default function Sidebar({ currentUser, activeRooms, savedRooms = [], currentRoom, customRoomNames, onNewChat, onSelectRoom, onOpenSettings, onLogout, onToggleFriends, showFriends, friendRequestsCount, onRenameRoom, onDeleteRoom, isMobileOpen, onCloseMobile }) {
   const displayRooms = Array.from(new Set([...savedRooms, ...activeRooms]));
   const [editingRoomId, setEditingRoomId] = useState(null);
   const [editingValue, setEditingValue] = useState('');
@@ -15,9 +15,34 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
           </div>
           Your Chats
         </h2>
-        <button className="mobile-close-btn" onClick={onCloseMobile}>
-          <X size={24} />
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <button 
+            onClick={() => {
+              if (onNewChat) onNewChat();
+              if (isMobileOpen && onCloseMobile) onCloseMobile();
+            }}
+            style={{
+              background: 'rgba(59, 130, 246, 0.15)',
+              border: 'none',
+              color: 'var(--primary)',
+              cursor: 'pointer',
+              padding: '0.4rem',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s'
+            }}
+            title="New Chat"
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.25)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.15)'}
+          >
+            <Plus size={20} strokeWidth={2.5} />
+          </button>
+          <button className="mobile-close-btn" onClick={onCloseMobile}>
+            <X size={24} />
+          </button>
+        </div>
       </div>
       <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         {displayRooms.length === 0 ? (

@@ -484,6 +484,7 @@ function App() {
         savedRooms={savedRooms}
         currentRoom={roomId}
         customRoomNames={customRoomNames}
+        onNewChat={() => setRoomId('')}
         onRenameRoom={handleRenameRoom}
         onDeleteRoom={handleDeleteRoom}
         onSelectRoom={(rId) => {

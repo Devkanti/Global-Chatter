@@ -616,7 +616,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         </div>
 
         {isMembersOpen && (
-          <div ref={membersRef} className="glass animate-fade-in" style={{ position: 'absolute', top: '100%', right: '1.5rem', width: '250px', maxHeight: '300px', overflowY: 'auto', zIndex: 50, borderRadius: '16px', padding: '0.75rem', marginTop: '0.5rem', border: '1px solid var(--panel-border)' }}>
+          <div ref={membersRef} className="animate-fade-in" style={{ position: 'absolute', top: '100%', right: '1.5rem', width: '250px', maxHeight: '300px', overflowY: 'auto', zIndex: 50, borderRadius: '16px', padding: '0.75rem', marginTop: '0.5rem', border: '1px solid var(--panel-border)', background: 'var(--panel-bg)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)' }}>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', padding: '0.5rem', borderBottom: '1px solid var(--panel-border)', marginBottom: '0.5rem', fontWeight: '600' }}>
               {onlineUsers.length} Active Member{onlineUsers.length !== 1 ? 's' : ''}
             </div>

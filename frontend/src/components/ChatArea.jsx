@@ -585,19 +585,6 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
                 <LogOut size={20} />
               </button>
             )}
-
-            <div style={{ width: '1px', height: '20px', background: 'var(--panel-border)' }} />
-
-            <button 
-              onClick={() => onToggleFriends()}
-              className="mobile-friends-toggle"
-              style={{ background: 'transparent', color: showFriends ? 'var(--primary)' : 'var(--text-muted)', border: 'none', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', transition: 'all 0.2s', display: 'flex' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--panel-bg)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-              title="Toggle Friends List"
-            >
-              {showFriends ? <PanelRightClose size={20} /> : <PanelRightOpen size={20} />}
-            </button>
           </div>
         </div>
 

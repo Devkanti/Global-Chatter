@@ -25,6 +25,22 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const typingTimeoutRef = useRef(null);
+  const membersRef = useRef(null);
+  const membersBtnRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isMembersOpen &&
+        (!membersRef.current || !membersRef.current.contains(event.target)) &&
+        (!membersBtnRef.current || !membersBtnRef.current.contains(event.target))
+      ) {
+        setIsMembersOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMembersOpen]);
 
   useEffect(() => {
     const handlePresence = (users) => setOnlineUsers(users);
@@ -533,6 +549,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
           {/* Core Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <button 
+              ref={membersBtnRef}
               onClick={() => setIsMembersOpen(!isMembersOpen)}
               style={{ background: 'transparent', color: 'var(--text-muted)', border: 'none', position: 'relative', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', transition: 'all 0.2s', display: 'flex' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--panel-bg)'; e.currentTarget.style.color = 'var(--text-main)'; }}
@@ -575,7 +592,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         </div>
 
         {isMembersOpen && (
-          <div className="glass animate-fade-in" style={{ position: 'absolute', top: '100%', right: '1.5rem', width: '250px', maxHeight: '300px', overflowY: 'auto', zIndex: 50, borderRadius: '16px', padding: '0.75rem', marginTop: '0.5rem', border: '1px solid var(--panel-border)' }}>
+          <div ref={membersRef} className="glass animate-fade-in" style={{ position: 'absolute', top: '100%', right: '1.5rem', width: '250px', maxHeight: '300px', overflowY: 'auto', zIndex: 50, borderRadius: '16px', padding: '0.75rem', marginTop: '0.5rem', border: '1px solid var(--panel-border)' }}>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', padding: '0.5rem', borderBottom: '1px solid var(--panel-border)', marginBottom: '0.5rem', fontWeight: '600' }}>
               {onlineUsers.length} Active Member{onlineUsers.length !== 1 ? 's' : ''}
             </div>

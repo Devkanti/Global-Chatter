@@ -919,7 +919,7 @@
   }
   .friends-sidebar-wrapper.mobile-open {
     transform: translateX(0);
-    box-shadow: -5px 0 25px rgba(0,0,0,0.5);
+    box-shadow: -20px 0 50px rgba(0,0,0,0.6);
   }
   
   .friends-sidebar {
@@ -928,9 +928,10 @@
     height: 100% !important;
     transform: none !important;
     box-shadow: none !important;
-    background: var(--body-bg);
+    background: var(--panel-bg);
+    backdrop-filter: blur(24px);
     border-left: 1px solid var(--panel-border);
-    border-radius: 0;
+    border-radius: 20px 0 0 20px !important;
   }
 
   /* Backdrop for closing drawers */

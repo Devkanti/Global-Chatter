@@ -254,21 +254,26 @@ input::placeholder {
 /* Mobile Responsive Overrides */
 @media (max-width: 768px) {
   .chat-header-title-text {
-    max-width: 140px;
+    font-size: 1.1rem;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: inline-block;
   }
   .chat-header-actions {
-    gap: 0 !important;
+    gap: 0.4rem !important;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    max-width: 45vw;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chat-header-actions::-webkit-scrollbar {
+    display: none;
   }
   .chat-header-actions button {
-    padding: 0.35rem !important;
+    padding: 0.4rem !important;
+    flex-shrink: 0;
   }
   .chat-header-actions svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
   }
   .modal-content {
     padding: 1.5rem !important;

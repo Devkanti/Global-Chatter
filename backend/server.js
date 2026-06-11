@@ -23,6 +23,11 @@ app.use('/auth', authRoutes);
 const pushRoutes = require('./routes/push');
 app.use('/push', pushRoutes);
 
+// Health check endpoint for UptimeRobot
+app.get('/ping', (req, res) => {
+  res.status(200).send('pong');
+});
+
 if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
   webpush.setVapidDetails(
     'mailto:contact@devkantisarkar.com',

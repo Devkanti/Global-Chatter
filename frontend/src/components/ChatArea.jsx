@@ -529,7 +529,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
 
           {/* Search Action */}
           {isSearchOpen ? (
-            <div className="animate-fade-in" style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '20px', padding: '0.2rem 0.6rem' }}>
+            <div className="animate-fade-in chat-search-container" style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '20px', padding: '0.2rem 0.6rem' }}>
               <Search size={14} color="var(--text-muted)" />
               <input 
                 autoFocus
@@ -537,6 +537,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
                 placeholder="Search..." 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
+                className="search-input-no-ring"
                 style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', fontSize: '0.9rem', width: '120px', padding: '0.3rem', outline: 'none' }}
               />
               <button onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '2px', display: 'flex' }}>

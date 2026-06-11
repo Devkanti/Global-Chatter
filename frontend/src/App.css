@@ -1025,3 +1025,23 @@
     bottom: 1.5rem; padding: 0.75rem 1.5rem; gap: 1rem; width: 90%; justify-content: space-around;
   }
 }
+
+/* Search Bar Fixes */
+.chat-search-container {
+  transition: all 0.2s ease;
+}
+
+.chat-search-container:focus-within {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px var(--primary-glow) !important;
+}
+
+.search-input-no-ring {
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+.search-input-no-ring:focus {
+  box-shadow: none !important;
+  border-color: transparent !important;
+}

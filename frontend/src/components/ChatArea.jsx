@@ -510,51 +510,56 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
           </div>
         )}
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           {!isGlobal && (
             <>
               {/* Call Group */}
-              <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid var(--panel-border)', borderRadius: '999px', padding: '0.2rem 0.5rem', gap: '0.2rem' }}>
-                <button className="control-btn" onClick={() => onInitiateCall('audio', defaultRoomName)} title="Audio Call" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.4rem', borderRadius: '50%', transition: 'all 0.2s', display: 'flex' }} onMouseEnter={e => { e.currentTarget.style.color = '#10b981'; e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)'; }} onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}>
-                  <Phone size={18} />
-                </button>
-                <div style={{ width: '1px', height: '14px', background: 'var(--panel-border)' }} />
-                <button className="control-btn" onClick={() => onInitiateCall('video', defaultRoomName)} title="Video Call" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.4rem', borderRadius: '50%', transition: 'all 0.2s', display: 'flex' }} onMouseEnter={e => { e.currentTarget.style.color = '#8b5cf6'; e.currentTarget.style.background = 'rgba(139, 92, 246, 0.1)'; }} onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}>
-                  <Video size={18} />
-                </button>
-              </div>
+              <button 
+                onClick={() => onInitiateCall('audio', defaultRoomName)} 
+                title="Audio Call" 
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.5rem', borderRadius: '8px', transition: 'all 0.2s', display: 'flex' }} 
+                onMouseEnter={e => { e.currentTarget.style.color = '#10b981'; e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)'; }} 
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}
+              >
+                <Phone size={20} />
+              </button>
+              <button 
+                onClick={() => onInitiateCall('video', defaultRoomName)} 
+                title="Video Call" 
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.5rem', borderRadius: '8px', transition: 'all 0.2s', display: 'flex' }} 
+                onMouseEnter={e => { e.currentTarget.style.color = '#8b5cf6'; e.currentTarget.style.background = 'rgba(139, 92, 246, 0.1)'; }} 
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}
+              >
+                <Video size={20} />
+              </button>
 
               {/* Utility Group */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <button 
-                  onClick={handleSaveRoom}
-                  style={{ background: isSaved ? 'rgba(16, 185, 129, 0.1)' : 'transparent', color: isSaved ? '#10b981' : 'var(--text-muted)', border: 'none', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', transition: 'all 0.2s', display: 'flex' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = isSaved ? 'rgba(16, 185, 129, 0.2)' : 'var(--panel-bg)'; e.currentTarget.style.color = isSaved ? '#10b981' : 'var(--text-main)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = isSaved ? 'rgba(16, 185, 129, 0.1)' : 'transparent'; e.currentTarget.style.color = isSaved ? '#10b981' : 'var(--text-muted)'; }}
-                  title={isSaved ? "Saved to Active Chats" : "Save to Active Chats"}
-                >
-                  {isSaved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
-                </button>
+              <button 
+                onClick={handleSaveRoom}
+                style={{ background: isSaved ? 'rgba(16, 185, 129, 0.1)' : 'transparent', color: isSaved ? '#10b981' : 'var(--text-muted)', border: 'none', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', transition: 'all 0.2s', display: 'flex' }}
+                onMouseEnter={e => { e.currentTarget.style.background = isSaved ? 'rgba(16, 185, 129, 0.2)' : 'var(--panel-bg)'; e.currentTarget.style.color = isSaved ? '#10b981' : 'var(--text-main)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = isSaved ? 'rgba(16, 185, 129, 0.1)' : 'transparent'; e.currentTarget.style.color = isSaved ? '#10b981' : 'var(--text-muted)'; }}
+                title={isSaved ? "Saved to Active Chats" : "Save to Active Chats"}
+              >
+                {isSaved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
+              </button>
 
-                <button 
-                  onClick={copyRoomCode}
-                  style={{ background: 'transparent', color: 'var(--text-muted)', border: 'none', borderRadius: '8px', padding: '0.5rem', display: 'flex', alignItems: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--panel-bg)'; e.currentTarget.style.color = 'var(--text-main)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                  title="Copy Room Code"
-                >
-                  {copied ? <CheckCircle2 size={20} color="var(--success)" /> : <Copy size={20} />}
-                </button>
-              </div>
-
-              <div style={{ width: '1px', height: '20px', background: 'var(--panel-border)' }} />
+              <button 
+                onClick={copyRoomCode}
+                style={{ background: 'transparent', color: 'var(--text-muted)', border: 'none', borderRadius: '8px', padding: '0.5rem', display: 'flex', alignItems: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--panel-bg)'; e.currentTarget.style.color = 'var(--text-main)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                title="Copy Room Code"
+              >
+                {copied ? <CheckCircle2 size={20} color="var(--success)" /> : <Copy size={20} />}
+              </button>
             </>
           )}
 
           {/* Search Action */}
           {isSearchOpen ? (
-            <div className="animate-fade-in chat-search-container" style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '20px', padding: '0.2rem 0.6rem' }}>
-              <Search size={14} color="var(--text-muted)" />
+            <div className="animate-fade-in chat-search-container" style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', padding: '0 0.5rem', height: '36px', marginLeft: '0.25rem' }}>
+              <Search size={16} color="var(--text-muted)" />
               <input 
                 autoFocus
                 type="text" 
@@ -562,10 +567,10 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="search-input-no-ring"
-                style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', fontSize: '0.9rem', width: '120px', padding: '0.3rem', outline: 'none' }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', fontSize: '0.9rem', width: '120px', padding: '0 0.5rem', outline: 'none' }}
               />
-              <button onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '2px', display: 'flex' }}>
-                <X size={14} />
+              <button onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.2rem', display: 'flex' }}>
+                <X size={16} />
               </button>
             </div>
           ) : (
@@ -581,35 +586,33 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
           )}
 
           {/* Core Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <button 
-              ref={membersBtnRef}
-              onClick={() => setIsMembersOpen(!isMembersOpen)}
-              style={{ background: 'transparent', color: 'var(--text-muted)', border: 'none', position: 'relative', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', transition: 'all 0.2s', display: 'flex' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--panel-bg)'; e.currentTarget.style.color = 'var(--text-main)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-              title="Active Members"
-            >
-              <Users size={20} />
-              {onlineUsers.length > 0 && (
-                <div style={{ position: 'absolute', top: '0px', right: '0px', background: '#10b981', color: 'white', fontSize: '0.6rem', padding: '2px 4px', borderRadius: '8px', fontWeight: 'bold' }}>
-                  {onlineUsers.length}
-                </div>
-              )}
-            </button>
-
-            {!isGlobal && (
-              <button 
-                onClick={onLeave}
-                style={{ background: 'transparent', color: '#ef4444', border: 'none', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', transition: 'all 0.2s', display: 'flex' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                title="Leave Room"
-              >
-                <LogOut size={20} />
-              </button>
+          <button 
+            ref={membersBtnRef}
+            onClick={() => setIsMembersOpen(!isMembersOpen)}
+            style={{ background: 'transparent', color: 'var(--text-muted)', border: 'none', position: 'relative', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', transition: 'all 0.2s', display: 'flex' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--panel-bg)'; e.currentTarget.style.color = 'var(--text-main)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+            title="Active Members"
+          >
+            <Users size={20} />
+            {onlineUsers.length > 0 && (
+              <div style={{ position: 'absolute', top: '2px', right: '0px', background: '#10b981', color: 'white', fontSize: '0.6rem', padding: '2px 5px', borderRadius: '8px', fontWeight: 'bold', border: '2px solid var(--panel-bg)' }}>
+                {onlineUsers.length}
+              </div>
             )}
-          </div>
+          </button>
+
+          {!isGlobal && (
+            <button 
+              onClick={onLeave}
+              style={{ background: 'transparent', color: '#ef4444', border: 'none', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', transition: 'all 0.2s', display: 'flex' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              title="Leave Room"
+            >
+              <LogOut size={20} />
+            </button>
+          )}
         </div>
 
         {isMembersOpen && (

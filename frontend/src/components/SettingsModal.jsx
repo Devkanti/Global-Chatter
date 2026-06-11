@@ -99,15 +99,15 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content animate-fade-in" style={{ background: 'var(--body-bg)', borderRadius: '24px', border: '1px solid var(--panel-border)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05)', width: '100%', maxWidth: '700px', padding: '2rem', position: 'relative' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', borderBottom: '1px solid var(--panel-border)', paddingBottom: '1rem' }}>
-          <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '700', color: 'var(--text-main)' }}>User Settings</h2>
-          <button onClick={onClose} style={{ background: 'transparent', color: 'var(--text-muted)', border: 'none', cursor: 'pointer', display: 'flex', padding: '0.25rem' }}>
-            <X size={24} />
+      <div className="modal-content animate-fade-in" style={{ background: 'rgba(24, 24, 37, 0.85)', backdropFilter: 'blur(24px)', borderRadius: '24px', border: '1px solid rgba(255, 255, 255, 0.08)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.02)', width: '100%', maxWidth: '750px', padding: '2.5rem', position: 'relative' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+          <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-main)' }}>Settings</h2>
+          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)', border: 'none', cursor: 'pointer', display: 'flex', padding: '0.5rem', borderRadius: '50%', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text-main)'; }} onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
+            <X size={20} strokeWidth={2.5} />
           </button>
         </div>
         
-        <div style={{ display: 'flex', gap: '2rem', flexDirection: 'row' }}>
+        <div style={{ display: 'flex', gap: '2.5rem', flexDirection: 'row' }}>
           
           {/* Left Column - Profile Summary */}
           <div style={{ width: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
@@ -129,8 +129,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
                   fontSize: '3rem',
                   color: 'var(--bg-color)',
                   fontWeight: '700',
-                  border: '4px solid var(--panel-border)',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                  boxShadow: '0 0 0 2px rgba(255,255,255,0.05), 0 12px 32px rgba(0,0,0,0.3)',
                   transition: 'filter 0.2s',
                   filter: isHoveringAvatar ? 'brightness(0.7)' : 'brightness(1)'
                 }}
@@ -177,7 +176,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto', paddingRight: '0.5rem' }}>
             
             {/* Display Name Card */}
-            <div style={{ background: 'var(--panel-bg)', border: '1px solid var(--panel-border)', borderRadius: '16px', padding: '1.25rem' }}>
+            <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem' }}>DISPLAY NAME</p>
               {isEditingName ? (
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -202,7 +201,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
             </div>
 
             {/* Presence Status Card */}
-            <div style={{ background: 'var(--panel-bg)', border: '1px solid var(--panel-border)', borderRadius: '16px', padding: '1.25rem' }}>
+            <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem' }}>PRESENCE STATUS</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <button onClick={() => handleStatusChange('online')} style={{ flex: '1 1 auto', whiteSpace: 'nowrap', padding: '0.6rem 0.75rem', borderRadius: '8px', background: currentStatus === 'online' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(0,0,0,0.1)', border: `1px solid ${currentStatus === 'online' ? '#10b981' : 'transparent'}`, color: currentStatus === 'online' ? 'var(--text-main)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s' }}>
@@ -218,7 +217,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
             </div>
 
             {/* Privacy Card */}
-            <div style={{ background: 'var(--panel-bg)', border: '1px solid var(--panel-border)', borderRadius: '16px', padding: '1.25rem' }}>
+            <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem' }}>PRIVACY & SAFETY</p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -240,7 +239,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
             </div>
 
             {/* Reputation Card */}
-            <div style={{ background: 'var(--panel-bg)', border: '1px solid var(--panel-border)', borderRadius: '16px', padding: '1.25rem' }}>
+            <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '0.75rem' }}>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', margin: 0 }}>REPUTATION SCORE</p>
                 <span style={{ fontSize: '1.2rem', fontWeight: '700', color: scoreColor, lineHeight: 1 }}>{score}%</span>

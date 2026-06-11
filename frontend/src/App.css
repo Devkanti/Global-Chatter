@@ -328,7 +328,7 @@
 }
 
 .chat-message-row.mine {
-  justify-content: flex-end;
+  flex-direction: row-reverse;
 }
 
 .chat-avatar {

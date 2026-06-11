@@ -673,7 +673,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
               onMouseEnter={() => setHoveredMessage(msg.id)}
               onMouseLeave={() => setHoveredMessage(null)}
             >
-              {!isMine && !isSystem && (
+              {!isSystem && (
                 <div 
                   className={`chat-avatar ${isGroupedTop ? 'hidden' : ''}`}
                   style={{ background: displayAvatar ? `url(${displayAvatar}) center/cover` : getAvatarGradient(displayName), position: 'relative', cursor: isPrivacyEnabled ? 'default' : 'pointer' }}

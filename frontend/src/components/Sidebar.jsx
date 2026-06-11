@@ -22,7 +22,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
               if (isMobileOpen && onCloseMobile) onCloseMobile();
             }}
             style={{
-              background: 'rgba(255, 255, 255, 0.05)',
+              background: 'var(--hover-bg)',
               border: 'none',
               color: 'var(--text-main)',
               cursor: 'pointer',
@@ -32,11 +32,11 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
               alignItems: 'center',
               justifyContent: 'center',
               transition: 'all 0.2s',
-              border: '1px solid rgba(255, 255, 255, 0.05)'
+              border: '1px solid var(--hover-bg)'
             }}
             title="New Chat"
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--hover-bg-strong)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--hover-bg)'; e.currentTarget.style.borderColor = 'var(--hover-bg)' }}
           >
             <Plus size={20} strokeWidth={2.5} />
           </button>
@@ -92,7 +92,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
                 onClick={() => { if (!isEditing) onSelectRoom(roomId); }}
                 onMouseEnter={e => {
                   setHoveredRoomId(roomId);
-                  if (!isActive) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                  if (!isActive) e.currentTarget.style.background = 'var(--icon-bg)';
                 }}
                 onMouseLeave={e => {
                   setHoveredRoomId(null);
@@ -102,7 +102,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
                 <div style={{ 
                   display: 'flex', alignItems: 'center', justifyContent: 'center', 
                   width: '32px', height: '32px', borderRadius: '10px', 
-                  background: isActive ? '#c4b5fd' : 'rgba(255, 255, 255, 0.05)',
+                  background: isActive ? '#c4b5fd' : 'var(--hover-bg)',
                   color: isActive ? '#1e1e2e' : 'var(--text-muted)',
                   boxShadow: isActive ? '0 4px 12px rgba(196, 181, 253, 0.3)' : 'none',
                   transition: 'all 0.2s'
@@ -156,7 +156,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
                             style={{
                               background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px', display: 'flex', borderRadius: '6px', transition: 'all 0.2s'
                             }}
-                            onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-main)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; }}
+                            onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-main)'; e.currentTarget.style.background = 'var(--hover-bg-strong)'; }}
                             onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}
                             title="Rename Chat"
                           >
@@ -197,7 +197,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
       </div>
       
       {/* Footer / Settings & Logout */}
-      <div style={{ marginTop: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', background: 'rgba(0, 0, 0, 0.1)', borderTop: '1px solid rgba(255, 255, 255, 0.02)' }}>
+      <div style={{ marginTop: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', background: 'var(--sidebar-bottom)', borderTop: '1px solid var(--card-bg)' }}>
         
         <button 
           onClick={onToggleFriends}
@@ -215,7 +215,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
           }}
           onMouseEnter={(e) => {
             if (!showFriends) {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+              e.currentTarget.style.background = 'var(--icon-bg)';
             }
           }}
           onMouseLeave={(e) => {
@@ -225,7 +225,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
           }}
         >
           <div style={{ position: 'relative' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: showFriends ? '#fda4af' : 'rgba(255,255,255,0.05)', color: showFriends ? '#1e1e2e' : 'inherit', boxShadow: showFriends ? '0 4px 12px rgba(253, 164, 175, 0.3)' : 'none', transition: 'all 0.2s' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: showFriends ? '#fda4af' : 'var(--hover-bg)', color: showFriends ? '#1e1e2e' : 'inherit', boxShadow: showFriends ? '0 4px 12px rgba(253, 164, 175, 0.3)' : 'none', transition: 'all 0.2s' }}>
               <Users size={18} />
             </div>
             {friendRequestsCount > 0 && (
@@ -254,7 +254,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
             transition: 'all 0.2s',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+            e.currentTarget.style.background = 'var(--icon-bg)';
             e.currentTarget.style.color = 'var(--text-main)';
           }}
           onMouseLeave={(e) => {
@@ -262,7 +262,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
             e.currentTarget.style.color = 'var(--text-muted)';
           }}
         >
-          <div style={{ width: '32px', height: '32px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', color: 'inherit', transition: 'all 0.2s' }}>
+          <div style={{ width: '32px', height: '32px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--hover-bg)', color: 'inherit', transition: 'all 0.2s' }}>
             <Settings size={18} />
           </div>
           <span style={{ fontWeight: '500' }}>Settings</span>

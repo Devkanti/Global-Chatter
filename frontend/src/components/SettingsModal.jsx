@@ -99,10 +99,10 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content animate-fade-in" style={{ background: 'rgba(24, 24, 37, 0.85)', backdropFilter: 'blur(24px)', borderRadius: '24px', border: '1px solid rgba(255, 255, 255, 0.08)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.02)', width: '100%', maxWidth: '750px', padding: '2.5rem', position: 'relative' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+      <div className="modal-content animate-fade-in" style={{ background: 'var(--panel-bg)', backdropFilter: 'blur(24px)', borderRadius: '24px', border: '1px solid var(--panel-border)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px var(--card-bg)', width: '100%', maxWidth: '750px', padding: '2.5rem', position: 'relative' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--hover-bg)' }}>
           <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-main)' }}>Settings</h2>
-          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)', border: 'none', cursor: 'pointer', display: 'flex', padding: '0.5rem', borderRadius: '50%', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text-main)'; }} onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
+          <button onClick={onClose} style={{ background: 'var(--hover-bg)', color: 'var(--text-muted)', border: 'none', cursor: 'pointer', display: 'flex', padding: '0.5rem', borderRadius: '50%', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = 'var(--hover-bg-strong)'; e.currentTarget.style.color = 'var(--text-main)'; }} onMouseLeave={e => { e.currentTarget.style.background = 'var(--hover-bg)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
             <X size={20} strokeWidth={2.5} />
           </button>
         </div>
@@ -129,7 +129,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
                   fontSize: '3rem',
                   color: 'var(--bg-color)',
                   fontWeight: '700',
-                  boxShadow: '0 0 0 2px rgba(255,255,255,0.05), 0 12px 32px rgba(0,0,0,0.3)',
+                  boxShadow: '0 0 0 2px var(--hover-bg), 0 12px 32px rgba(0,0,0,0.3)',
                   transition: 'filter 0.2s',
                   filter: isHoveringAvatar ? 'brightness(0.7)' : 'brightness(1)'
                 }}
@@ -176,7 +176,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto', paddingRight: '0.5rem' }}>
             
             {/* Display Name Card */}
-            <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
+            <div style={{ background: 'var(--card-bg)', border: '1px solid var(--hover-bg)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem' }}>DISPLAY NAME</p>
               {isEditingName ? (
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -193,7 +193,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '1.2rem', fontWeight: '500', color: 'var(--text-main)' }}>{currentUser}</span>
-                  <button onClick={() => { setNewNameInput(currentUser); setIsEditingName(true); }} style={{ color: 'var(--text-muted)', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: '0.85rem', fontWeight: '600' }} onMouseEnter={(e) => { e.currentTarget.style.color='var(--text-main)'; e.currentTarget.style.background='rgba(255,255,255,0.1)'; }} onMouseLeave={(e) => { e.currentTarget.style.color='var(--text-muted)'; e.currentTarget.style.background='rgba(255,255,255,0.05)'; }}>
+                  <button onClick={() => { setNewNameInput(currentUser); setIsEditingName(true); }} style={{ color: 'var(--text-muted)', cursor: 'pointer', background: 'var(--hover-bg)', padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: '0.85rem', fontWeight: '600' }} onMouseEnter={(e) => { e.currentTarget.style.color='var(--text-main)'; e.currentTarget.style.background='var(--hover-bg-strong)'; }} onMouseLeave={(e) => { e.currentTarget.style.color='var(--text-muted)'; e.currentTarget.style.background='var(--hover-bg)'; }}>
                     Edit Name
                   </button>
                 </div>
@@ -201,27 +201,27 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
             </div>
 
             {/* Presence Status Card */}
-            <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
+            <div style={{ background: 'var(--card-bg)', border: '1px solid var(--hover-bg)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem' }}>PRESENCE STATUS</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <button onClick={() => handleStatusChange('online')} style={{ flex: '1 1 auto', whiteSpace: 'nowrap', padding: '0.6rem 0.75rem', borderRadius: '8px', background: currentStatus === 'online' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(0,0,0,0.1)', border: `1px solid ${currentStatus === 'online' ? '#10b981' : 'transparent'}`, color: currentStatus === 'online' ? 'var(--text-main)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s' }}>
+                <button onClick={() => handleStatusChange('online')} style={{ flex: '1 1 auto', whiteSpace: 'nowrap', padding: '0.6rem 0.75rem', borderRadius: '8px', background: currentStatus === 'online' ? 'rgba(16, 185, 129, 0.15)' : 'var(--sidebar-bottom)', border: `1px solid ${currentStatus === 'online' ? '#10b981' : 'transparent'}`, color: currentStatus === 'online' ? 'var(--text-main)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: currentStatus === 'online' ? '0 0 8px rgba(16,185,129,0.5)' : 'none', flexShrink: 0 }}></div> Online
                 </button>
-                <button onClick={() => handleStatusChange('dnd')} style={{ flex: '1 1 auto', whiteSpace: 'nowrap', padding: '0.6rem 0.75rem', borderRadius: '8px', background: currentStatus === 'dnd' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(0,0,0,0.1)', border: `1px solid ${currentStatus === 'dnd' ? '#f59e0b' : 'transparent'}`, color: currentStatus === 'dnd' ? 'var(--text-main)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s' }}>
+                <button onClick={() => handleStatusChange('dnd')} style={{ flex: '1 1 auto', whiteSpace: 'nowrap', padding: '0.6rem 0.75rem', borderRadius: '8px', background: currentStatus === 'dnd' ? 'rgba(245, 158, 11, 0.15)' : 'var(--sidebar-bottom)', border: `1px solid ${currentStatus === 'dnd' ? '#f59e0b' : 'transparent'}`, color: currentStatus === 'dnd' ? 'var(--text-main)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f59e0b', boxShadow: currentStatus === 'dnd' ? '0 0 8px rgba(245,158,11,0.5)' : 'none', flexShrink: 0 }}></div> Do Not Disturb
                 </button>
-                <button onClick={() => handleStatusChange('invisible')} style={{ flex: '1 1 auto', whiteSpace: 'nowrap', padding: '0.6rem 0.75rem', borderRadius: '8px', background: currentStatus === 'invisible' ? 'rgba(155, 164, 181, 0.15)' : 'rgba(0,0,0,0.1)', border: `1px solid ${currentStatus === 'invisible' ? '#9ba4b5' : 'transparent'}`, color: currentStatus === 'invisible' ? 'var(--text-main)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s' }}>
+                <button onClick={() => handleStatusChange('invisible')} style={{ flex: '1 1 auto', whiteSpace: 'nowrap', padding: '0.6rem 0.75rem', borderRadius: '8px', background: currentStatus === 'invisible' ? 'rgba(155, 164, 181, 0.15)' : 'var(--sidebar-bottom)', border: `1px solid ${currentStatus === 'invisible' ? '#9ba4b5' : 'transparent'}`, color: currentStatus === 'invisible' ? 'var(--text-main)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', border: '2px solid var(--text-muted)', flexShrink: 0 }}></div> Invisible
                 </button>
               </div>
             </div>
 
             {/* Privacy Card */}
-            <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
+            <div style={{ background: 'var(--card-bg)', border: '1px solid var(--hover-bg)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem' }}>PRIVACY & SAFETY</p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <div style={{ background: 'rgba(0,0,0,0.1)', padding: '0.5rem', borderRadius: '8px' }}>
+                  <div style={{ background: 'var(--sidebar-bottom)', padding: '0.5rem', borderRadius: '8px' }}>
                     <EyeOff size={18} color={userPrivacyMode?.[currentUser] ? '#10b981' : 'var(--text-muted)'} />
                   </div>
                   <div>
@@ -239,7 +239,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
             </div>
 
             {/* Reputation Card */}
-            <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
+            <div style={{ background: 'var(--card-bg)', border: '1px solid var(--hover-bg)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '0.75rem' }}>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', margin: 0 }}>REPUTATION SCORE</p>
                 <span style={{ fontSize: '1.2rem', fontWeight: '700', color: scoreColor, lineHeight: 1 }}>{score}%</span>

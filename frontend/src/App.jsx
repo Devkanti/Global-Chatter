@@ -587,11 +587,11 @@ function App() {
                 onClick={handleJoinGlobal} 
                 style={{ 
                   display: 'flex', alignItems: 'center', textAlign: 'left', padding: '1rem 1.25rem', 
-                  background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', 
+                  background: 'var(--card-bg)', border: '1px solid var(--hover-bg)', 
                   borderRadius: '16px', transition: 'all 0.2s', cursor: 'pointer', gap: '1.25rem' 
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.3)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.transform = 'translateY(0)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--hover-bg)'; e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.3)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--card-bg)'; e.currentTarget.style.borderColor = 'var(--hover-bg)'; e.currentTarget.style.transform = 'translateY(0)' }}
               >
                 <div style={{ background: 'rgba(168, 85, 247, 0.1)', width: '48px', height: '48px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(168, 85, 247, 0.2)' }}>
                   <Globe size={24} color="#a855f7" />
@@ -607,11 +607,11 @@ function App() {
                 onClick={handleCreatePrivate} 
                 style={{ 
                   display: 'flex', alignItems: 'center', textAlign: 'left', padding: '1rem 1.25rem', 
-                  background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', 
+                  background: 'var(--card-bg)', border: '1px solid var(--hover-bg)', 
                   borderRadius: '16px', transition: 'all 0.2s', cursor: 'pointer', gap: '1.25rem' 
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.3)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.transform = 'translateY(0)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--hover-bg)'; e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.3)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--card-bg)'; e.currentTarget.style.borderColor = 'var(--hover-bg)'; e.currentTarget.style.transform = 'translateY(0)' }}
               >
                 <div style={{ background: 'rgba(16, 185, 129, 0.1)', width: '48px', height: '48px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
                   <Plus size={24} color="#10b981" />
@@ -625,9 +625,9 @@ function App() {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '2rem auto', width: '100%', maxWidth: '440px' }}>
-              <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.05)' }}></div>
+              <div style={{ flex: 1, height: '1px', background: 'var(--hover-bg)' }}></div>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '600', letterSpacing: '2px' }}>OR JOIN EXISTING</span>
-              <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.05)' }}></div>
+              <div style={{ flex: 1, height: '1px', background: 'var(--hover-bg)' }}></div>
             </div>
 
             <form onSubmit={handleJoinPrivate} style={{ 
@@ -648,8 +648,8 @@ function App() {
                   onChange={(e) => setRoomIdInput(e.target.value.toUpperCase())}
                   style={{ 
                     width: '100%',
-                    background: 'rgba(255, 255, 255, 0.02)', 
-                    border: '1px solid rgba(255, 255, 255, 0.08)', 
+                    background: 'var(--card-bg)', 
+                    border: '1px solid var(--panel-border)', 
                     borderRadius: '12px',
                     padding: '0.8rem 1rem 0.8rem 2.5rem',
                     color: 'var(--text-main)', 
@@ -660,8 +660,8 @@ function App() {
                     letterSpacing: '1px',
                     boxSizing: 'border-box'
                   }}
-                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'; }}
-                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'; }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.background = 'var(--hover-bg)'; }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'var(--panel-border)'; e.currentTarget.style.background = 'var(--card-bg)'; }}
                   maxLength={6}
                 />
               </div>
@@ -672,7 +672,7 @@ function App() {
                   display: 'flex', 
                   alignItems: 'center', 
                   gap: '0.5rem', 
-                  background: roomIdInput.trim() ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
+                  background: roomIdInput.trim() ? 'var(--primary)' : 'var(--hover-bg)',
                   color: roomIdInput.trim() ? 'white' : 'var(--text-muted)',
                   border: 'none',
                   padding: '0 1.25rem',

@@ -435,7 +435,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
           left: '24px',
           background: 'rgba(15, 23, 42, 0.9)', 
           backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255,255,255,0.1)',
+          border: '1px solid var(--hover-bg-strong)',
           borderLeft: '4px solid #ef4444',
           color: '#f8fafc', 
           padding: '1rem 1.25rem',
@@ -467,7 +467,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         document.body
       )}
 
-      <div className="chat-header" style={{ position: 'relative', zIndex: 50, background: 'rgba(20, 20, 30, 0.85)', backdropFilter: 'blur(12px)' }}>
+      <div className="chat-header" style={{ position: 'relative', zIndex: 50, background: 'var(--header-bg)', backdropFilter: 'blur(12px)' }}>
         {isEditingName ? (
           <input 
             type="text" 
@@ -802,7 +802,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
 
       <div className="chat-input-area" style={{ position: 'relative' }}>
         {replyingTo && (
-          <div style={{ position: 'absolute', top: '-45px', left: '1rem', right: '1rem', background: 'rgba(30,30,40,0.9)', backdropFilter: 'blur(10px)', border: '1px solid var(--panel-border)', borderBottom: 'none', padding: '10px 16px', borderRadius: '16px 16px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', boxShadow: '0 -4px 15px rgba(0,0,0,0.1)' }}>
+          <div style={{ position: 'absolute', top: '-45px', left: '1rem', right: '1rem', background: 'rgba(30,30,40,0.9)', backdropFilter: 'blur(10px)', border: '1px solid var(--panel-border)', borderBottom: 'none', padding: '10px 16px', borderRadius: '16px 16px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', boxShadow: '0 -4px 15px var(--sidebar-bottom)' }}>
             <div style={{ color: 'var(--text-muted)' }}>Replying to <span style={{ color: 'var(--primary)', fontWeight: '600' }}>{replyingTo.sender}</span></div>
             <button onClick={() => setReplyingTo(null)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}>×</button>
           </div>

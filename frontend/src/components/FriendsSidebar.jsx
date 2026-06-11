@@ -35,7 +35,7 @@ export default function FriendsSidebar({ currentUser, userProfiles, userStatuses
                       transition: 'all 0.2s',
                       background: 'transparent'
                     }} 
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--icon-bg)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     onClick={() => onSelectUser(reqUser)}
                   >
@@ -67,7 +67,7 @@ export default function FriendsSidebar({ currentUser, userProfiles, userStatuses
                 );
               })}
             </div>
-            <div style={{ width: '100%', height: '1px', background: 'rgba(255, 255, 255, 0.05)', margin: '1rem 0' }}></div>
+            <div style={{ width: '100%', height: '1px', background: 'var(--hover-bg)', margin: '1rem 0' }}></div>
           </div>
         )}
 
@@ -110,7 +110,7 @@ export default function FriendsSidebar({ currentUser, userProfiles, userStatuses
                       padding: '0.6rem 0.75rem',
                       gap: '0.75rem'
                     }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--icon-bg)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     onClick={() => onSelectUser(user)}
                   >
@@ -126,7 +126,7 @@ export default function FriendsSidebar({ currentUser, userProfiles, userStatuses
                     </div>
                     <span className="user-name" style={{ fontWeight: '500', fontSize: '0.95rem' }}>{user}</span>
                     {user === currentUser && (
-                      <span className="user-me-badge" style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', padding: '0.1rem 0.5rem', borderRadius: '8px', fontSize: '0.7rem' }}>You</span>
+                      <span className="user-me-badge" style={{ marginLeft: 'auto', background: 'var(--hover-bg-strong)', padding: '0.1rem 0.5rem', borderRadius: '8px', fontSize: '0.7rem' }}>You</span>
                     )}
                   </div>
                 );

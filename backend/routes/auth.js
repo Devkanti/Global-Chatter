@@ -2,11 +2,17 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 const User = require('../models/User');
 const OTP = require('../models/OTP');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 
 // Utility to generate 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -49,17 +55,17 @@ router.post('/signup', async (req, res) => {
     const otpEntry = new OTP({ email, otp: otpCode });
     await otpEntry.save();
 
-    // Send OTP via Resend
+    // Send OTP via Nodemailer
     try {
-      await resend.emails.send({
-        from: 'Global Chatter <onboarding@resend.dev>',
+      await transporter.sendMail({
+        from: `"Global Chatter" <${process.env.EMAIL_USER}>`,
         to: email,
         subject: 'Verify your Global Chatter Account',
         html: `<p>Your verification code is: <strong>${otpCode}</strong></p><p>This code will expire in 5 minutes.</p>`
       });
-      console.log(`[DEBUG] OTP for ${email} sent via Resend. Code: ${otpCode}`);
+      console.log(`[DEBUG] OTP for ${email} sent via Nodemailer. Code: ${otpCode}`);
     } catch (emailError) {
-      console.error(`[DEBUG] Failed to send email via Resend to ${email}. Code was: ${otpCode}`, emailError);
+      console.error(`[DEBUG] Failed to send email via Nodemailer to ${email}. Code was: ${otpCode}`, emailError);
     }
 
     res.status(200).json({ message: 'OTP processed', email });

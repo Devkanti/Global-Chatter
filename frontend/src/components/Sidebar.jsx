@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, LogOut, MessageSquare, Globe, Hash, Users, Bookmark, Edit2, X, Plus } from 'lucide-react';
+import { Settings, LogOut, MessageSquare, Globe, Hash, Users, Bookmark, Edit2, X, Plus, Trash2 } from 'lucide-react';
 
 export default function Sidebar({ currentUser, activeRooms, savedRooms = [], currentRoom, customRoomNames, onNewChat, onSelectRoom, onOpenSettings, onLogout, onToggleFriends, showFriends, friendRequestsCount, onRenameRoom, onDeleteRoom, isMobileOpen, onCloseMobile }) {
   const displayRooms = Array.from(new Set([...savedRooms, ...activeRooms]));
@@ -157,7 +157,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
                             onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
                             title="Delete Chat"
                           >
-                            <X size={16} />
+                            <Trash2 size={14} />
                           </button>
                         </div>
                       )}

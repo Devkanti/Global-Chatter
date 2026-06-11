@@ -349,7 +349,11 @@ function App() {
 
   if (!isLoggedIn) {
     return (
-      <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'radial-gradient(circle at center, #2a2a4a 0%, var(--body-bg) 100%)', overflow: 'hidden' }}>
+        {/* Ambient background glows */}
+        <div style={{ position: 'absolute', width: '60vw', height: '60vw', maxWidth: '600px', maxHeight: '600px', background: 'rgba(139, 92, 246, 0.15)', filter: 'blur(100px)', borderRadius: '50%', top: '-20%', left: '-10%', zIndex: 0, pointerEvents: 'none' }}></div>
+        <div style={{ position: 'absolute', width: '50vw', height: '50vw', maxWidth: '500px', maxHeight: '500px', background: 'rgba(59, 130, 246, 0.15)', filter: 'blur(100px)', borderRadius: '50%', bottom: '-20%', right: '-10%', zIndex: 0, pointerEvents: 'none' }}></div>
+
         <button
           className="theme-toggle-slider"
           onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
@@ -390,15 +394,19 @@ function App() {
           </div>
         </button>
         
-        <div className="glass glass-panel login-container animate-fade-in" style={{ 
+        <div className="animate-fade-in" style={{ 
           maxWidth: '440px', 
-          width: '100%',
+          width: '90%',
           padding: '3.5rem 2.5rem',
           zIndex: 10,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          boxShadow: 'var(--login-shadow)'
+          background: 'rgba(24, 24, 37, 0.7)',
+          backdropFilter: 'blur(24px)',
+          borderRadius: '24px',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.02)'
         }}>
           <div style={{ 
             width: '80px', 
@@ -409,7 +417,7 @@ function App() {
             alignItems: 'center', 
             justifyContent: 'center',
             marginBottom: '1.5rem',
-            boxShadow: '0 10px 25px rgba(139, 92, 246, 0.4)',
+            boxShadow: '0 10px 25px rgba(139, 92, 246, 0.4), inset 0 2px 4px rgba(255,255,255,0.2)',
             transform: 'rotate(-5deg)'
           }}>
             <Sparkles size={40} color="#ffffff" style={{ transform: 'rotate(5deg)' }} />
@@ -424,7 +432,7 @@ function App() {
           }}>
             {otpMode ? 'Verify Email' : (isSignUp ? 'Create Account' : 'Welcome Back')}
           </h1>
-          <p className="subtitle" style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '2rem', textAlign: 'center' }}>
+          <p className="subtitle" style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '2.5rem', textAlign: 'center' }}>
             {otpMode ? `Enter the 6-digit code sent to ${email}` : (isSignUp ? 'Sign up to get started' : 'Log in to continue chatting')}
           </p>
 
@@ -445,22 +453,34 @@ function App() {
                     placeholder="123456"
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    style={{ paddingLeft: '3rem', letterSpacing: '4px', textAlign: 'center', fontSize: '1.2rem', fontWeight: '700', width: '100%' }}
+                    style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-main)', borderRadius: '12px', padding: '0.85rem 1rem 0.85rem 3rem', outline: 'none', transition: 'all 0.2s', letterSpacing: '4px', textAlign: 'center', fontSize: '1.2rem', fontWeight: '700', width: '100%' }}
+                    onFocus={e => { e.currentTarget.style.border = '1px solid var(--primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.2)'; }}
+                    onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.05)'; e.currentTarget.style.boxShadow = 'none'; }}
                     autoFocus
                   />
                 </div>
               </div>
-              <button type="submit" className="btn-primary" disabled={otpCode.length !== 6 || isLoading} style={{ padding: '0.85rem', borderRadius: '12px', fontWeight: '600', marginTop: '0.5rem', opacity: (otpCode.length !== 6 || isLoading) ? 0.5 : 1 }}>
+              <button type="submit" className="btn-primary" disabled={otpCode.length !== 6 || isLoading} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.85rem', borderRadius: '12px', fontWeight: '600', marginTop: '1rem', opacity: (otpCode.length !== 6 || isLoading) ? 0.7 : 1 }}>
                 {isLoading ? 'Verifying...' : 'Verify & Continue'}
               </button>
             </form>
           ) : (
-            <form onSubmit={handleAuthSubmit} className="login-form" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleAuthSubmit} className="login-form" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
                 <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem' }}>Email</label>
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                   <Mail size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1.25rem', opacity: 0.7 }} />
-                  <input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} style={{ paddingLeft: '3rem', width: '100%' }} required autoFocus />
+                  <input 
+                    type="email" 
+                    placeholder="you@example.com" 
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)} 
+                    style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-main)', borderRadius: '12px', padding: '0.85rem 1rem 0.85rem 3rem', outline: 'none', transition: 'all 0.2s', width: '100%', fontSize: '0.95rem' }} 
+                    onFocus={e => { e.currentTarget.style.border = '1px solid var(--primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.2)'; }}
+                    onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.05)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    required 
+                    autoFocus 
+                  />
                 </div>
               </div>
 
@@ -469,7 +489,16 @@ function App() {
                   <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem' }}>Username</label>
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                     <UserIcon size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1.25rem', opacity: 0.7 }} />
-                    <input type="text" placeholder="username" value={username} onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20))} style={{ paddingLeft: '3rem', width: '100%' }} required />
+                    <input 
+                      type="text" 
+                      placeholder="username" 
+                      value={username} 
+                      onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20))} 
+                      style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-main)', borderRadius: '12px', padding: '0.85rem 1rem 0.85rem 3rem', outline: 'none', transition: 'all 0.2s', width: '100%', fontSize: '0.95rem' }} 
+                      onFocus={e => { e.currentTarget.style.border = '1px solid var(--primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.2)'; }}
+                      onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.05)'; e.currentTarget.style.boxShadow = 'none'; }}
+                      required 
+                    />
                   </div>
                 </div>
               )}
@@ -478,11 +507,21 @@ function App() {
                 <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem' }}>Password</label>
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                   <Lock size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1.25rem', opacity: 0.7 }} />
-                  <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={{ paddingLeft: '3rem', width: '100%' }} required minLength={6} />
+                  <input 
+                    type="password" 
+                    placeholder="••••••••" 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-main)', borderRadius: '12px', padding: '0.85rem 1rem 0.85rem 3rem', outline: 'none', transition: 'all 0.2s', width: '100%', fontSize: '0.95rem', letterSpacing: '1px' }} 
+                    onFocus={e => { e.currentTarget.style.border = '1px solid var(--primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.2)'; }}
+                    onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.05)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    required 
+                    minLength={6} 
+                  />
                 </div>
               </div>
               
-              <button type="submit" className="btn-primary" disabled={isLoading || !email || !password || (isSignUp && !username)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.85rem', borderRadius: '12px', fontWeight: '600', marginTop: '0.5rem', opacity: isLoading ? 0.7 : 1 }}>
+              <button type="submit" className="btn-primary" disabled={isLoading || !email || !password || (isSignUp && !username)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.85rem', borderRadius: '12px', fontWeight: '600', marginTop: '1rem', opacity: isLoading ? 0.7 : 1 }}>
                 {isLoading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Log In')} <ArrowRight size={18} />
               </button>
             </form>

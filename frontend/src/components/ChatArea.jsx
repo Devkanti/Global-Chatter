@@ -481,7 +481,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
                   <Hash size={20} strokeWidth={2.5} color="var(--primary)" />
                 </div>
               )}
-              {roomDisplayName}
+              {defaultRoomName}
             </h2>
           </div>
         )}
@@ -491,11 +491,11 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
             <>
               {/* Call Group */}
               <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid var(--panel-border)', borderRadius: '999px', padding: '0.2rem 0.5rem', gap: '0.2rem' }}>
-                <button className="control-btn" onClick={() => onInitiateCall('audio', roomDisplayName)} title="Audio Call" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.4rem', borderRadius: '50%', transition: 'all 0.2s', display: 'flex' }} onMouseEnter={e => { e.currentTarget.style.color = '#10b981'; e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)'; }} onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}>
+                <button className="control-btn" onClick={() => onInitiateCall('audio', defaultRoomName)} title="Audio Call" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.4rem', borderRadius: '50%', transition: 'all 0.2s', display: 'flex' }} onMouseEnter={e => { e.currentTarget.style.color = '#10b981'; e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)'; }} onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}>
                   <Phone size={18} />
                 </button>
                 <div style={{ width: '1px', height: '14px', background: 'var(--panel-border)' }} />
-                <button className="control-btn" onClick={() => onInitiateCall('video', roomDisplayName)} title="Video Call" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.4rem', borderRadius: '50%', transition: 'all 0.2s', display: 'flex' }} onMouseEnter={e => { e.currentTarget.style.color = '#8b5cf6'; e.currentTarget.style.background = 'rgba(139, 92, 246, 0.1)'; }} onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}>
+                <button className="control-btn" onClick={() => onInitiateCall('video', defaultRoomName)} title="Video Call" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.4rem', borderRadius: '50%', transition: 'all 0.2s', display: 'flex' }} onMouseEnter={e => { e.currentTarget.style.color = '#8b5cf6'; e.currentTarget.style.background = 'rgba(139, 92, 246, 0.1)'; }} onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}>
                   <Video size={18} />
                 </button>
               </div>

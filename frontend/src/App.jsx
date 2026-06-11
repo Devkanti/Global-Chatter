@@ -450,6 +450,9 @@ function App() {
                   <KeyRound size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1.25rem', opacity: 0.7 }} />
                   <input
                     type="text"
+                    name="otp"
+                    autoComplete="one-time-code"
+                    inputMode="numeric"
                     placeholder="123456"
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -472,6 +475,8 @@ function App() {
                   <Mail size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1.25rem', opacity: 0.7 }} />
                   <input 
                     type="email" 
+                    name="email"
+                    autoComplete="email"
                     placeholder="you@example.com" 
                     value={email} 
                     onChange={(e) => setEmail(e.target.value)} 
@@ -491,6 +496,8 @@ function App() {
                     <UserIcon size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1.25rem', opacity: 0.7 }} />
                     <input 
                       type="text" 
+                      name="username"
+                      autoComplete="username"
                       placeholder="username" 
                       value={username} 
                       onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20))} 
@@ -509,6 +516,8 @@ function App() {
                   <Lock size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1.25rem', opacity: 0.7 }} />
                   <input 
                     type="password" 
+                    name="password"
+                    autoComplete={isSignUp ? "new-password" : "current-password"}
                     placeholder="••••••••" 
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 

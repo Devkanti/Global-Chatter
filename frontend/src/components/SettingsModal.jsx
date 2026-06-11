@@ -32,25 +32,56 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      alert('Please upload an image file.');
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Please upload an image file.' }));
       return;
     }
 
-    // Limit file size to ~200KB to prevent memory bloat
-    if (file.size > 200 * 1024) {
-      alert('Image is too large! Please upload a file smaller than 200KB.');
+    // Limit file size to 10MB
+    if (file.size > 10 * 1024 * 1024) {
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Image is too large! Please upload a file smaller than 10MB.' }));
       return;
     }
 
     setIsUploading(true);
     const reader = new FileReader();
     reader.onloadend = () => {
-      const base64String = reader.result;
-      socket.emit('user:update_profile', base64String);
-      setIsUploading(false);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 200;
+        const MAX_HEIGHT = 200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        socket.emit('user:update_profile', compressedDataUrl);
+        setIsUploading(false);
+      };
+      img.onerror = () => {
+        window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Failed to process image.' }));
+        setIsUploading(false);
+      };
+      img.src = reader.result;
     };
     reader.onerror = () => {
-      alert('Failed to read file.');
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Failed to read file.' }));
       setIsUploading(false);
     };
     reader.readAsDataURL(file);

@@ -332,7 +332,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
       setIsRecording(true);
     } catch (e) {
       console.error(e);
-      alert('Microphone access denied or unavailable.');
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Microphone access denied or unavailable.' }));
     }
   };
 

@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import Sidebar from './components/Sidebar';
 import FriendsSidebar from './components/FriendsSidebar';
 import ChatArea from './components/ChatArea';
 import SettingsModal from './components/SettingsModal';
 import UserProfileModal from './components/UserProfileModal';
 import CallOverlay from './components/CallOverlay';
+import Toast from './components/Toast';
 import { MessageSquare, Globe, KeyRound, Plus, Settings, Sun, Moon, PanelRightClose, PanelRightOpen, ArrowRight, Sparkles, User, Mail, Lock, User as UserIcon } from 'lucide-react';
 import { initCrypto } from './crypto';
 import { socket, BACKEND_URL } from './socket';
@@ -32,6 +34,7 @@ function App() {
   const [sentRequests, setSentRequests] = useState(new Set());
   const [userPrivacyMode, setUserPrivacyMode] = useState({});
   const [userPublicKeys, setUserPublicKeys] = useState({});
+  const [toastMessage, setToastMessage] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showFriends, setShowFriends] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -55,6 +58,12 @@ function App() {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('chat_theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    const handleToast = (e) => setToastMessage(e.detail);
+    window.addEventListener('app:toast', handleToast);
+    return () => window.removeEventListener('app:toast', handleToast);
+  }, []);
 
   useEffect(() => {
     socket.on('profiles:sync', (profiles) => {

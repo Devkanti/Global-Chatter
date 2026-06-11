@@ -202,7 +202,7 @@ export function useWebRTC(currentUser) {
 
     const handleDeclined = () => {
       cleanupCall();
-      alert('Call was declined or user is busy.');
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Call was declined or user is busy.' }));
     };
 
     const handleEnded = () => {

@@ -3,7 +3,7 @@
   <p><strong>A premium, real-time messaging application with end-to-end encryption.</strong></p>
 
   <p>
-    <a href="https://gochatting.vercel.app/" target="_blank">
+    <a href="" target="_blank">
       <img src="https://img.shields.io/badge/🚀_Play_Live-Visit_Website-10b981?style=for-the-badge" alt="Live Website" />
     </a>
   </p>

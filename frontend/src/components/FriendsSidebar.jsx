@@ -1,4 +1,4 @@
-import { Heart, PanelRightClose, Check, X, UserPlus } from 'lucide-react';
+import { Heart, Check, X, UserPlus } from 'lucide-react';
 import { getAvatarGradient } from '../utils';
 import { socket } from '../socket';
 
@@ -14,15 +14,6 @@ export default function FriendsSidebar({ currentUser, userProfiles, userStatuses
           </div>
           Friends
         </h2>
-        <button 
-          onClick={onClose}
-          style={{ background: 'transparent', color: 'var(--text-muted)', border: '1px solid var(--panel-border)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--panel-bg)'; e.currentTarget.style.color = 'var(--text-main)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-          title="Hide Friends Sidebar"
-        >
-          <PanelRightClose size={16} />
-        </button>
       </div>
       <div className="sidebar-content">
         {friendRequests && friendRequests.length > 0 && (

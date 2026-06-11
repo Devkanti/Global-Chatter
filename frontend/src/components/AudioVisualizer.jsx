@@ -18,6 +18,7 @@ export default function AudioVisualizer({ stream }) {
       
       source.connect(analyser);
       analyser.fftSize = 64; // smooth big bars
+      analyser.smoothingTimeConstant = 0.85;
       const bufferLength = analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
 
@@ -29,22 +30,35 @@ export default function AudioVisualizer({ stream }) {
         const HEIGHT = canvas.height;
 
         animationRef.current = requestAnimationFrame(draw);
-
         analyser.getByteFrequencyData(dataArray);
-
         canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
-        const barWidth = (WIDTH / bufferLength) * 1.5;
-        let barHeight;
+        // Calculate actual width needed for bars (use middle frequencies mostly)
+        const activeBars = Math.floor(bufferLength * 0.7); 
+        const barWidth = (WIDTH / activeBars) * 1.2;
         let x = 0;
 
-        for (let i = 0; i < bufferLength; i++) {
-          barHeight = dataArray[i] / 4; 
+        // Create glowing gradient
+        const gradient = canvasCtx.createLinearGradient(0, 0, WIDTH, 0);
+        gradient.addColorStop(0, '#a855f7'); // purple
+        gradient.addColorStop(0.5, '#ec4899'); // pink
+        gradient.addColorStop(1, '#f43f5e'); // rose
 
-          // Primary color gradient: var(--primary) is around rgb(59, 130, 246)
-          canvasCtx.fillStyle = '#3b82f6';
+        for (let i = 0; i < activeBars; i++) {
+          // Add a subtle wave base + actual volume
+          const volume = dataArray[i];
+          const normalizedVol = volume / 255;
+          let barHeight = (normalizedVol * HEIGHT * 0.8) + 2; 
+
+          // Apply some easing so low volumes still show a small bump
+          if (barHeight < 4) barHeight = 4;
+
+          canvasCtx.fillStyle = gradient;
+          canvasCtx.shadowBlur = 8;
+          canvasCtx.shadowColor = gradient;
+          
           canvasCtx.beginPath();
-          canvasCtx.roundRect(x, HEIGHT / 2 - barHeight / 2, barWidth - 2, barHeight < 2 ? 2 : barHeight, 4);
+          canvasCtx.roundRect(x, HEIGHT / 2 - barHeight / 2, barWidth - 2, barHeight, (barWidth - 2) / 2);
           canvasCtx.fill();
 
           x += barWidth;

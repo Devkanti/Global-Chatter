@@ -22,20 +22,21 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
               if (isMobileOpen && onCloseMobile) onCloseMobile();
             }}
             style={{
-              background: 'rgba(59, 130, 246, 0.15)',
+              background: 'rgba(255, 255, 255, 0.05)',
               border: 'none',
-              color: 'var(--primary)',
+              color: 'var(--text-main)',
               cursor: 'pointer',
               padding: '0.4rem',
-              borderRadius: '8px',
+              borderRadius: '10px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'all 0.2s'
+              transition: 'all 0.2s',
+              border: '1px solid rgba(255, 255, 255, 0.05)'
             }}
             title="New Chat"
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.25)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.15)'}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)' }}
           >
             <Plus size={20} strokeWidth={2.5} />
           </button>
@@ -44,7 +45,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
           </button>
         </div>
       </div>
-      <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
         {displayRooms.length === 0 ? (
           <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', textAlign: 'center', marginTop: '4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
             <Bookmark size={36} color="var(--panel-border)" style={{ opacity: 0.5 }} />
@@ -80,15 +81,32 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
                 className={`user-item animate-slide-in ${isActive ? 'active-room' : ''}`}
                 style={{ 
                   cursor: 'pointer', 
-                  background: isActive ? 'var(--panel-bg)' : 'transparent',
-                  border: isActive ? '1px solid var(--panel-border)' : '1px solid transparent',
-                  position: 'relative'
+                  background: isActive ? 'rgba(196, 181, 253, 0.1)' : 'transparent',
+                  border: 'none',
+                  borderRadius: '12px',
+                  position: 'relative',
+                  transition: 'all 0.2s',
+                  padding: '0.6rem 0.75rem',
+                  gap: '0.75rem'
                 }}
                 onClick={() => { if (!isEditing) onSelectRoom(roomId); }}
-                onMouseEnter={() => setHoveredRoomId(roomId)}
-                onMouseLeave={() => setHoveredRoomId(null)}
+                onMouseEnter={e => {
+                  setHoveredRoomId(roomId);
+                  if (!isActive) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                }}
+                onMouseLeave={e => {
+                  setHoveredRoomId(null);
+                  if (!isActive) e.currentTarget.style.background = 'transparent';
+                }}
               >
-                <div style={{ color: isActive ? 'var(--primary)' : 'var(--text-muted)' }}>
+                <div style={{ 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                  width: '32px', height: '32px', borderRadius: '10px', 
+                  background: isActive ? '#c4b5fd' : 'rgba(255, 255, 255, 0.05)',
+                  color: isActive ? '#1e1e2e' : 'var(--text-muted)',
+                  boxShadow: isActive ? '0 4px 12px rgba(196, 181, 253, 0.3)' : 'none',
+                  transition: 'all 0.2s'
+                }}>
                   {icon}
                 </div>
                 
@@ -115,8 +133,8 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
                       background: 'var(--bg-color)',
                       color: 'var(--text-main)',
                       border: '1px solid var(--primary)',
-                      borderRadius: '4px',
-                      padding: '2px 6px',
+                      borderRadius: '8px',
+                      padding: '4px 8px',
                       fontSize: '0.9rem',
                       width: '100%',
                       outline: 'none'
@@ -124,7 +142,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
                   />
                 ) : (
                   <>
-                    <span className="user-name" style={{ color: isActive ? 'var(--text-main)' : 'var(--text-muted)' }}>{title}</span>
+                    <span className="user-name" style={{ color: isActive ? 'var(--text-main)' : 'var(--text-muted)', fontWeight: isActive ? '600' : '500' }}>{title}</span>
                     
                     <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       {!isGlobal && hoveredRoomId === roomId && !isEditing && (
@@ -136,10 +154,10 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
                               setEditingValue(title === roomId ? '' : title);
                             }}
                             style={{
-                              background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '2px', display: 'flex', borderRadius: '4px'
+                              background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px', display: 'flex', borderRadius: '6px', transition: 'all 0.2s'
                             }}
-                            onMouseEnter={e => e.currentTarget.style.color = 'var(--text-main)'}
-                            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+                            onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-main)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}
                             title="Rename Chat"
                           >
                             <Edit2 size={14} />
@@ -151,10 +169,10 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
                               if (onDeleteRoom) onDeleteRoom(roomId);
                             }}
                             style={{
-                              background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '2px', display: 'flex', borderRadius: '4px'
+                              background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px', display: 'flex', borderRadius: '6px', transition: 'all 0.2s'
                             }}
-                            onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
-                            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+                            onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'transparent'; }}
                             title="Delete Chat"
                           >
                             <Trash2 size={14} />
@@ -163,7 +181,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
                       )}
 
                       {savedRooms.includes(roomId) && hoveredRoomId !== roomId && (
-                        <Bookmark size={14} style={{ color: 'var(--text-muted)' }} />
+                        <Bookmark size={14} style={{ color: isActive ? '#c4b5fd' : 'var(--text-muted)', opacity: isActive ? 1 : 0.5 }} />
                       )}
                       
                       {isActive && (
@@ -179,7 +197,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
       </div>
       
       {/* Footer / Settings & Logout */}
-      <div style={{ marginTop: 'auto', padding: '1rem', borderTop: '1px solid var(--panel-border)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div style={{ marginTop: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', background: 'rgba(0, 0, 0, 0.1)', borderTop: '1px solid rgba(255, 255, 255, 0.02)' }}>
         
         <button 
           onClick={onToggleFriends}
@@ -188,35 +206,35 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
             display: 'flex', 
             alignItems: 'center', 
             gap: '0.75rem', 
-            padding: '0.75rem', 
-            background: showFriends ? 'var(--panel-bg)' : 'transparent',
+            padding: '0.5rem', 
+            background: showFriends ? 'rgba(253, 164, 175, 0.1)' : 'transparent',
             color: showFriends ? 'var(--text-main)' : 'var(--text-muted)',
             borderRadius: '12px',
-            transition: 'background 0.2s',
+            transition: 'all 0.2s',
             position: 'relative'
           }}
           onMouseEnter={(e) => {
             if (!showFriends) {
-              e.currentTarget.style.background = 'var(--panel-bg)';
-              e.currentTarget.style.color = 'var(--text-main)';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
             }
           }}
           onMouseLeave={(e) => {
             if (!showFriends) {
               e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = 'var(--text-muted)';
             }
           }}
         >
           <div style={{ position: 'relative' }}>
-            <Users size={20} />
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: showFriends ? '#fda4af' : 'rgba(255,255,255,0.05)', color: showFriends ? '#1e1e2e' : 'inherit', boxShadow: showFriends ? '0 4px 12px rgba(253, 164, 175, 0.3)' : 'none', transition: 'all 0.2s' }}>
+              <Users size={18} />
+            </div>
             {friendRequestsCount > 0 && (
-              <div style={{ position: 'absolute', top: '-4px', right: '-4px', width: '10px', height: '10px', background: '#ef4444', borderRadius: '50%', border: '2px solid var(--bg-color)' }}></div>
+              <div style={{ position: 'absolute', top: '-4px', right: '-4px', width: '12px', height: '12px', background: '#ef4444', borderRadius: '50%', border: '2px solid var(--panel-bg)' }}></div>
             )}
           </div>
-          <span style={{ fontWeight: '500', flex: 1, textAlign: 'left' }}>Friends</span>
+          <span style={{ fontWeight: showFriends ? '600' : '500', flex: 1, textAlign: 'left' }}>Friends</span>
           {friendRequestsCount > 0 && (
-            <span style={{ background: '#ef4444', color: 'white', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.1rem 0.4rem', borderRadius: '10px' }}>
+            <span style={{ background: '#ef4444', color: 'white', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.1rem 0.5rem', borderRadius: '10px' }}>
               {friendRequestsCount}
             </span>
           )}
@@ -229,14 +247,14 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
             display: 'flex', 
             alignItems: 'center', 
             gap: '0.75rem', 
-            padding: '0.75rem', 
+            padding: '0.5rem', 
             background: 'transparent',
             color: 'var(--text-muted)',
             borderRadius: '12px',
-            transition: 'background 0.2s',
+            transition: 'all 0.2s',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'var(--panel-bg)';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
             e.currentTarget.style.color = 'var(--text-main)';
           }}
           onMouseLeave={(e) => {
@@ -244,7 +262,9 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
             e.currentTarget.style.color = 'var(--text-muted)';
           }}
         >
-          <Settings size={20} />
+          <div style={{ width: '32px', height: '32px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', color: 'inherit', transition: 'all 0.2s' }}>
+            <Settings size={18} />
+          </div>
           <span style={{ fontWeight: '500' }}>Settings</span>
         </button>
 
@@ -255,11 +275,11 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
             display: 'flex', 
             alignItems: 'center', 
             gap: '0.75rem', 
-            padding: '0.75rem', 
+            padding: '0.5rem', 
             background: 'transparent',
             color: '#ef4444',
             borderRadius: '12px',
-            transition: 'background 0.2s',
+            transition: 'all 0.2s',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
@@ -268,7 +288,9 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
             e.currentTarget.style.background = 'transparent';
           }}
         >
-          <LogOut size={20} />
+          <div style={{ width: '32px', height: '32px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(239, 68, 68, 0.1)', color: 'inherit', transition: 'all 0.2s' }}>
+            <LogOut size={18} />
+          </div>
           <span style={{ fontWeight: '500' }}>Log Out</span>
         </button>
       </div>

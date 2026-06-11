@@ -43,6 +43,10 @@ const messageSchema = new mongoose.Schema({
   audioData: {
     type: String, // Base64 audio
     default: null
+  },
+  payload: {
+    type: Object, // E2EE encrypted blob and keys
+    default: null
   }
 });
 

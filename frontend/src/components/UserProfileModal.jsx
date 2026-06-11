@@ -47,25 +47,25 @@ export default function UserProfileModal({ isOpen, onClose, targetUser, currentU
 
   return (
     <div className="modal-overlay">
-      <div className="glass glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '400px', padding: '2.5rem 2rem', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', color: 'var(--text-muted)', cursor: 'pointer', background: 'transparent', border: 'none' }}>
-          <X size={24} />
+      <div className="modal-content animate-fade-in" style={{ background: 'rgba(24, 24, 37, 0.85)', backdropFilter: 'blur(24px)', borderRadius: '24px', border: '1px solid rgba(255, 255, 255, 0.08)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.02)', width: '100%', maxWidth: '400px', padding: '3rem 2rem', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', color: 'var(--text-muted)', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', border: 'none', padding: '0.5rem', borderRadius: '50%', display: 'flex', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text-main)'; }} onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
+          <X size={20} strokeWidth={2.5} />
         </button>
 
         <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
           <div 
             style={{ 
-              width: '100px', height: '100px', borderRadius: '50%', 
+              width: '110px', height: '110px', borderRadius: '50%', 
               background: displayAvatar ? `url(${displayAvatar}) center/cover` : getAvatarGradient(displayName),
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '2.5rem', color: 'var(--bg-color)', fontWeight: '600',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-              border: '3px solid var(--bg-color)'
+              fontSize: '2.8rem', color: 'var(--bg-color)', fontWeight: '700',
+              boxShadow: '0 0 0 2px rgba(255,255,255,0.05), 0 12px 32px rgba(0,0,0,0.3)',
+              border: 'none'
             }}
           >
             {!displayAvatar && displayName.charAt(0).toUpperCase()}
           </div>
-          <div style={{ position: 'absolute', bottom: '0', right: '0', width: '20px', height: '20px', borderRadius: '50%', background: dotColor, border: dotBorder, boxShadow: targetStatus !== 'invisible' ? `0 0 10px ${dotColor}80` : 'none' }}></div>
+          <div style={{ position: 'absolute', bottom: '2px', right: '2px', width: '22px', height: '22px', borderRadius: '50%', background: dotColor, border: '3px solid rgba(24, 24, 37, 1)', boxShadow: targetStatus !== 'invisible' ? `0 0 12px ${dotColor}80` : 'none' }}></div>
         </div>
 
         <h3 style={{ fontSize: '1.5rem', fontWeight: '700', color: isPrivacyEnabled ? 'var(--text-muted)' : 'var(--text-main)', marginBottom: '0.25rem', fontStyle: isPrivacyEnabled ? 'italic' : 'normal' }}>{displayName}</h3>
@@ -99,9 +99,9 @@ export default function UserProfileModal({ isOpen, onClose, targetUser, currentU
 
             <button 
               onClick={handleMessage}
-              style={{ flex: 1, padding: '0.75rem', borderRadius: '12px', background: 'var(--panel-bg)', color: 'var(--text-main)', border: '1px solid var(--panel-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontWeight: '600', transition: 'all 0.2s', cursor: 'pointer' }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--panel-border)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--panel-bg)'; }}
+              style={{ flex: 1, padding: '0.75rem', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-main)', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontWeight: '600', transition: 'all 0.2s', cursor: 'pointer' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; }}
             >
               <MessageCircle size={18} />
               Message

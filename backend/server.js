@@ -448,6 +448,21 @@ io.on('connection', async (socket) => {
     
     io.to(roomId).emit('message:receive', messageData);
 
+    // Notify online users who are NOT currently in the private room
+    if (roomId.startsWith('PRIVATE-')) {
+      const users = roomId.replace('PRIVATE-', '').split('-');
+      const otherUser = users.find(u => u !== socket.username);
+      
+      if (otherUser) {
+        const theirSockets = Array.from(socketUsers.entries()).filter(([id, data]) => data.username === otherUser);
+        for (const [socketId, data] of theirSockets) {
+          if (data.roomId !== roomId) {
+            io.to(socketId).emit('message:notification', { roomId, sender: socket.username });
+          }
+        }
+      }
+    }
+
     // Push Notifications for offline users in private rooms
     if (roomId !== 'global') {
       try {

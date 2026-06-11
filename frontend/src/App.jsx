@@ -127,6 +127,15 @@ function App() {
       setUserPublicKeys(keysMap);
     });
 
+    socket.on('message:notification', ({ roomId, sender }) => {
+      setActiveRooms(prev => {
+        if (!prev.includes(roomId)) return [...prev, roomId];
+        return prev;
+      });
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: `New private message from ${sender}` }));
+    });
+
+
     // Cleanup socket on unmount
     return () => {
       socket.disconnect();

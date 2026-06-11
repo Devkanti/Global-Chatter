@@ -91,6 +91,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
 
   useEffect(() => {
     const handleReceiveMessage = async (msg) => {
+      if (msg.roomId && msg.roomId !== roomId) return;
       if (msg.type !== 'system' && msg.payload) {
         msg.text = await decryptMessage(msg.payload, currentUser, myPrivateKey);
       }

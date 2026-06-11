@@ -466,7 +466,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         document.body
       )}
 
-      <div className="chat-header" style={{ position: 'relative' }}>
+      <div className="chat-header" style={{ position: 'relative', zIndex: 50, background: 'rgba(20, 20, 30, 0.85)', backdropFilter: 'blur(12px)' }}>
         {isEditingName ? (
           <input 
             type="text" 
@@ -731,7 +731,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
                 })()}
                 
                 {msg.type === 'audio' ? (
-                  <div className="message-bubble audio-bubble" style={{ padding: '0', background: 'transparent', border: 'none' }}>
+                  <div className="message-bubble audio-bubble">
                     <CustomAudioPlayer src={msg.type === 'audio' ? (msg.audioData || msg.text) : ''} />
                   </div>
                 ) : (

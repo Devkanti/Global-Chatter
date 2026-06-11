@@ -84,13 +84,9 @@ export default function CustomAudioPlayer({ src }) {
       display: 'flex',
       alignItems: 'center',
       gap: '12px',
-      background: 'rgba(0, 0, 0, 0.25)',
-      padding: '10px 14px',
-      borderRadius: '24px',
-      minWidth: '240px',
-      maxWidth: '100%',
-      backdropFilter: 'blur(10px)',
-      border: '1px solid rgba(255,255,255,0.1)'
+      padding: '4px 8px',
+      minWidth: '220px',
+      maxWidth: '100%'
     }}>
       <audio ref={audioRef} src={src} preload="metadata" />
       

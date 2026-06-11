@@ -506,12 +506,12 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
                   <Hash size={20} strokeWidth={2.5} color="var(--primary)" />
                 </div>
               )}
-              {defaultRoomName}
+              <span className="chat-header-title-text">{defaultRoomName}</span>
             </h2>
           </div>
         )}
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+        <div className="chat-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           {!isGlobal && (
             <>
               {/* Call Group */}

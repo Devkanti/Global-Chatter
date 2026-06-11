@@ -107,7 +107,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
           </button>
         </div>
         
-        <div style={{ display: 'flex', gap: '2.5rem', flexDirection: 'row' }}>
+        <div style={{ display: 'flex', gap: '2.5rem', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
           
           {/* Left Column - Profile Summary */}
           <div style={{ width: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
@@ -173,7 +173,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
           </div>
 
           {/* Right Column - Settings Cards */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto', paddingRight: '0.5rem' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto', paddingRight: '0.5rem', minWidth: 'min(100%, 300px)' }}>
             
             {/* Display Name Card */}
             <div style={{ background: 'var(--card-bg)', border: '1px solid var(--hover-bg)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>

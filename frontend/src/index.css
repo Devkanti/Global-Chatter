@@ -250,3 +250,27 @@ input::placeholder {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+/* Mobile Responsive Overrides */
+@media (max-width: 768px) {
+  .chat-header-title-text {
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+  }
+  .chat-header-actions {
+    gap: 0 !important;
+  }
+  .chat-header-actions button {
+    padding: 0.35rem !important;
+  }
+  .chat-header-actions svg {
+    width: 18px;
+    height: 18px;
+  }
+  .modal-content {
+    padding: 1.5rem !important;
+  }
+}

@@ -10,6 +10,7 @@ import { initCrypto } from './crypto';
 import { socket, BACKEND_URL } from './socket';
 import { useWebRTC } from './useWebRTC';
 import { ErrorBoundary } from './ErrorBoundary';
+import InstallPrompt from './components/InstallPrompt';
 import './App.css';
 
 function App() {
@@ -668,6 +669,8 @@ function App() {
         isScreenSharing={webrtc.isScreenSharing}
         onToggleScreenShare={webrtc.toggleScreenShare}
       />
+      
+      <InstallPrompt />
     </div>
   );
 }

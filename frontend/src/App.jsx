@@ -402,11 +402,11 @@ function App() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          background: 'rgba(24, 24, 37, 0.7)',
+          background: 'var(--panel-bg)',
           backdropFilter: 'blur(24px)',
           borderRadius: '24px',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.02)'
+          border: '1px solid var(--panel-border)',
+          boxShadow: 'var(--login-shadow)'
         }}>
           <div style={{ 
             width: '80px', 
@@ -453,9 +453,9 @@ function App() {
                     placeholder="123456"
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-main)', borderRadius: '12px', padding: '0.85rem 1rem 0.85rem 3rem', outline: 'none', transition: 'all 0.2s', letterSpacing: '4px', textAlign: 'center', fontSize: '1.2rem', fontWeight: '700', width: '100%' }}
-                    onFocus={e => { e.currentTarget.style.border = '1px solid var(--primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.2)'; }}
-                    onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.05)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    style={{ background: 'var(--input-bg)', border: '1px solid var(--panel-border)', color: 'var(--text-main)', borderRadius: '12px', padding: '0.85rem 1rem 0.85rem 3rem', outline: 'none', transition: 'all 0.2s', letterSpacing: '4px', textAlign: 'center', fontSize: '1.2rem', fontWeight: '700', width: '100%' }}
+                    onFocus={e => { e.currentTarget.style.border = '1px solid var(--primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--primary-glow)'; }}
+                    onBlur={e => { e.currentTarget.style.border = '1px solid var(--panel-border)'; e.currentTarget.style.boxShadow = 'none'; }}
                     autoFocus
                   />
                 </div>
@@ -475,9 +475,9 @@ function App() {
                     placeholder="you@example.com" 
                     value={email} 
                     onChange={(e) => setEmail(e.target.value)} 
-                    style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-main)', borderRadius: '12px', padding: '0.85rem 1rem 0.85rem 3rem', outline: 'none', transition: 'all 0.2s', width: '100%', fontSize: '0.95rem' }} 
-                    onFocus={e => { e.currentTarget.style.border = '1px solid var(--primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.2)'; }}
-                    onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.05)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    style={{ background: 'var(--input-bg)', border: '1px solid var(--panel-border)', color: 'var(--text-main)', borderRadius: '12px', padding: '0.85rem 1rem 0.85rem 3rem', outline: 'none', transition: 'all 0.2s', width: '100%', fontSize: '0.95rem' }} 
+                    onFocus={e => { e.currentTarget.style.border = '1px solid var(--primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--primary-glow)'; }}
+                    onBlur={e => { e.currentTarget.style.border = '1px solid var(--panel-border)'; e.currentTarget.style.boxShadow = 'none'; }}
                     required 
                     autoFocus 
                   />
@@ -494,9 +494,9 @@ function App() {
                       placeholder="username" 
                       value={username} 
                       onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20))} 
-                      style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-main)', borderRadius: '12px', padding: '0.85rem 1rem 0.85rem 3rem', outline: 'none', transition: 'all 0.2s', width: '100%', fontSize: '0.95rem' }} 
-                      onFocus={e => { e.currentTarget.style.border = '1px solid var(--primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.2)'; }}
-                      onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.05)'; e.currentTarget.style.boxShadow = 'none'; }}
+                      style={{ background: 'var(--input-bg)', border: '1px solid var(--panel-border)', color: 'var(--text-main)', borderRadius: '12px', padding: '0.85rem 1rem 0.85rem 3rem', outline: 'none', transition: 'all 0.2s', width: '100%', fontSize: '0.95rem' }} 
+                      onFocus={e => { e.currentTarget.style.border = '1px solid var(--primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--primary-glow)'; }}
+                      onBlur={e => { e.currentTarget.style.border = '1px solid var(--panel-border)'; e.currentTarget.style.boxShadow = 'none'; }}
                       required 
                     />
                   </div>
@@ -512,9 +512,9 @@ function App() {
                     placeholder="••••••••" 
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
-                    style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-main)', borderRadius: '12px', padding: '0.85rem 1rem 0.85rem 3rem', outline: 'none', transition: 'all 0.2s', width: '100%', fontSize: '0.95rem', letterSpacing: '1px' }} 
-                    onFocus={e => { e.currentTarget.style.border = '1px solid var(--primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.2)'; }}
-                    onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.05)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    style={{ background: 'var(--input-bg)', border: '1px solid var(--panel-border)', color: 'var(--text-main)', borderRadius: '12px', padding: '0.85rem 1rem 0.85rem 3rem', outline: 'none', transition: 'all 0.2s', width: '100%', fontSize: '0.95rem', letterSpacing: '1px' }} 
+                    onFocus={e => { e.currentTarget.style.border = '1px solid var(--primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--primary-glow)'; }}
+                    onBlur={e => { e.currentTarget.style.border = '1px solid var(--panel-border)'; e.currentTarget.style.boxShadow = 'none'; }}
                     required 
                     minLength={6} 
                   />

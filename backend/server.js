@@ -242,6 +242,64 @@ io.on('connection', async (socket) => {
     }
   });
 
+  socket.on('user:change_name', async (newName) => {
+    try {
+      if (!newName || newName.length > 20) return;
+      
+      const existingUser = await User.findOne({ username: newName });
+      if (existingUser) {
+        socket.emit('system:warning', 'Username already taken.');
+        return;
+      }
+      
+      const oldName = socket.username;
+      const user = await User.findById(socket.userId);
+      if (!user) return;
+      
+      user.username = newName;
+      await user.save();
+      
+      // Update in-memory states
+      socket.username = newName;
+      
+      if (globalUsers.has(oldName)) {
+        globalUsers.delete(oldName);
+        globalUsers.add(newName);
+      }
+      
+      if (userStatuses.has(oldName)) {
+        const status = userStatuses.get(oldName);
+        userStatuses.delete(oldName);
+        userStatuses.set(newName, status);
+      }
+      
+      if (socket.roomId && roomUsers.has(socket.roomId)) {
+        roomUsers.get(socket.roomId).delete(oldName);
+        roomUsers.get(socket.roomId).add(newName);
+      }
+      
+      const userData = socketUsers.get(socket.id);
+      if (userData) {
+        userData.username = newName;
+      }
+      
+      // Update historical messages so sender matches
+      await Message.updateMany({ sender: oldName }, { $set: { sender: newName } });
+      
+      socket.emit('name_changed:success', newName);
+      
+      io.emit('global:presence', Array.from(globalUsers));
+      if (socket.roomId) {
+        io.to(socket.roomId).emit('presence:update', Array.from(roomUsers.get(socket.roomId)));
+      }
+      
+      await syncUserData();
+    } catch (e) {
+      console.error(e);
+      socket.emit('system:warning', 'Failed to change name.');
+    }
+  });
+
   const sendRequestSync = async (targetUsername) => {
     const targetUser = await User.findOne({ username: targetUsername }).populate('friendRequests', 'username');
     if (!targetUser) return;

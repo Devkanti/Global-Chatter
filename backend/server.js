@@ -299,6 +299,10 @@ io.on('connection', async (socket) => {
   socket.on('user:join', async ({ roomId }) => {
     if (!roomId) roomId = 'global';
     
+    if (socket.roomId === roomId) {
+      return; // Already in this room, prevent duplicate join messages
+    }
+    
     if (socket.roomId && socket.roomId !== roomId) {
       socket.leave(socket.roomId);
       if (roomUsers.has(socket.roomId)) {

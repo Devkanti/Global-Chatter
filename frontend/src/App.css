@@ -1016,6 +1016,201 @@
   .btn-accept svg, .btn-decline svg, .btn-end-call svg, .control-btn svg {
     width: 20px; height: 20px;
   }
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.mobile-backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    gap: 0;
+    height: 100dvh;
+    border-radius: 0;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .glass-panel {
+    border-radius: 0;
+    border: none;
+  }
+
+  /* Chat Area overrides */
+  .chat-header {
+    padding: 1rem;
+  }
+  .chat-messages {
+    padding: 1rem;
+  }
+  .chat-input-area {
+    padding: 1rem;
+    padding-bottom: env(safe-area-inset-bottom, 1rem); /* iPhone notch support */
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Sidebar sliding drawers */
+  .sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    background: var(--body-bg); /* Opaque */
+    transform: translateX(-100%);
+    box-shadow: none;
+    border-right: 1px solid var(--panel-border);
+  }
+  .sidebar.mobile-open {
+    transform: translateX(0);
+    box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+  }
+
+  .friends-sidebar-wrapper {
+    position: absolute !important;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+    width: 320px !important;
+    opacity: 1 !important;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .friends-sidebar-wrapper.mobile-open {
+    transform: translateX(0);
+    box-shadow: -5px 0 25px rgba(0,0,0,0.5);
+  }
+  
+  .friends-sidebar {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    transform: none !important;
+    box-shadow: none !important;
+    background: var(--body-bg);
+    border-left: 1px solid var(--panel-border);
+    border-radius: 0;
+  }
+
+  /* Backdrop for closing drawers */
+  .mobile-backdrop.active {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(2px);
+    z-index: 90;
+    animation: fade-in 0.3s forwards;
+  }
+
+  /* Room Selection Cards */
+  .room-options-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .room-card {
+    padding: 1.25rem 1rem;
+    gap: 0.5rem;
+  }
+
+  /* Shrink SVG icons dynamically on mobile */
+  .room-card svg {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .icon-wrapper {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+  }
+
+  .icon-wrapper svg {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Modals */
+  .modal-content {
+    width: 95%;
+    max-width: none;
+    padding: 1.5rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  /* Login padding */
+  .login-container {
+    padding: 2rem 1rem;
+  }
+
+  /* Call UI Mobile Adjustments */
+  .avatar-large {
+    width: 80px; height: 80px; font-size: 2rem;
+  }
+
+  .avatar-xl {
+    width: 100px; height: 100px; font-size: 2.5rem;
+  }
+
+  .caller-name {
+    font-size: 1.5rem;
+  }
+
+  .audio-caller-name {
+    font-size: 1.8rem;
+  }
+
+  .pulse-ring {
+    width: 80px; height: 80px;
+  }
+
+  .wave {
+    width: 100px; height: 100px;
+  }
+
+  .call-actions {
+    gap: 1rem;
+  }
+
+  .btn-accept, .btn-decline, .btn-end-call, .control-btn {
+    width: 50px; height: 50px;
+  }
+
+  .btn-accept svg, .btn-decline svg, .btn-end-call svg, .control-btn svg {
+    width: 20px; height: 20px;
+  }
 
   .local-video-bg.pip-mode {
     top: 1rem; right: 1rem; width: 100px; height: 140px; border-radius: 12px;
@@ -1044,4 +1239,36 @@
 .search-input-no-ring:focus {
   box-shadow: none !important;
   border-color: transparent !important;
+}
+
+/* Custom Audio Player Slider */
+.custom-audio-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(0,0,0,0.4);
+  transition: transform 0.1s;
+}
+
+.custom-audio-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: none;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(0,0,0,0.4);
+  transition: transform 0.1s;
+}
+
+.custom-audio-slider:active::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+
+.custom-audio-slider:active::-moz-range-thumb {
+  transform: scale(1.2);
 }

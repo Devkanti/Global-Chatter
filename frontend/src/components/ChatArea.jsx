@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { socket } from '../socket';
 import { Send, Check, CheckCheck, Copy, CheckCircle2, LogOut, Users, PanelRightOpen, PanelRightClose, Bookmark, BookmarkCheck, Edit2, Menu, Globe, Hash, Video, Phone, Mic, Square, Play, Pause, Search, X, Trash2 } from 'lucide-react';
 import AudioVisualizer from './AudioVisualizer';
+import CustomAudioPlayer from './CustomAudioPlayer';
 import { getAvatarGradient, censorText } from '../utils';
 import { encryptMessage, decryptMessage } from '../crypto';
 
@@ -693,8 +694,8 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
                 )}
                 
                 {msg.type === 'audio' ? (
-                  <div className="message-bubble audio-bubble">
-                    <audio controls src={msg.type === 'audio' ? (msg.audioData || msg.text) : ''} style={{ height: '36px', maxWidth: '200px' }} />
+                  <div className="message-bubble audio-bubble" style={{ padding: '0', background: 'transparent', border: 'none' }}>
+                    <CustomAudioPlayer src={msg.type === 'audio' ? (msg.audioData || msg.text) : ''} />
                   </div>
                 ) : (
                   <div className="message-bubble" style={{ whiteSpace: 'pre-wrap' }}>
@@ -768,7 +769,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         <form onSubmit={handleSend} className="chat-input-form" style={{ borderRadius: replyingTo ? '0 0 24px 24px' : '24px', overflow: 'hidden' }}>
           {recordedAudioBase64 ? (
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0 0.5rem' }}>
-              <audio controls src={recordedAudioBase64} style={{ flex: 1, height: '36px' }} />
+              <CustomAudioPlayer src={recordedAudioBase64} />
               <button type="button" onClick={cancelRecording} className="btn-icon" style={{ flexShrink: 0, color: '#ef4444' }}>
                 <Trash2 size={18} />
               </button>

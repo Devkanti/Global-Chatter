@@ -9,6 +9,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [typingUsers, setTypingUsers] = useState(new Set());
+  const [isMembersOpen, setIsMembersOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [warningMessage, setWarningMessage] = useState('');
   const [onlineUsers, setOnlineUsers] = useState([]);

@@ -9,6 +9,7 @@ import { MessageSquare, Globe, KeyRound, Plus, Settings, Sun, Moon, PanelRightCl
 import { initCrypto } from './crypto';
 import { socket, BACKEND_URL } from './socket';
 import { useWebRTC } from './useWebRTC';
+import { ErrorBoundary } from './ErrorBoundary';
 import './App.css';
 
 function App() {
@@ -574,26 +575,28 @@ function App() {
           </div>
         </div>
       ) : (
-        <ChatArea
-          currentUser={username}
-          roomId={roomId}
-          onLeave={() => leaveRoom(roomId)}
-          userProfiles={userProfiles}
-          userStatuses={userStatuses}
-          userFriends={userFriends}
-          userPrivacyMode={userPrivacyMode}
-          userPublicKeys={userPublicKeys}
-          myPrivateKey={myPrivateKey}
-          onSelectUser={setSelectedUserProfile}
-          onToggleFriends={() => setShowFriends(prev => !prev)}
-          showFriends={showFriends}
-          onSaveRoom={handleSaveRoomToggle}
-          isSaved={savedRooms.includes(roomId)}
-          customRoomName={customRoomNames[roomId]}
-          onRenameRoom={handleRenameRoom}
-          onToggleMobileSidebar={() => setShowMobileSidebar(true)}
-          onInitiateCall={(type, targetName) => webrtc.initiateCall(roomId, targetName, type)}
-        />
+        <ErrorBoundary>
+          <ChatArea
+            currentUser={username}
+            roomId={roomId}
+            onLeave={() => leaveRoom(roomId)}
+            userProfiles={userProfiles}
+            userStatuses={userStatuses}
+            userFriends={userFriends}
+            userPrivacyMode={userPrivacyMode}
+            userPublicKeys={userPublicKeys}
+            myPrivateKey={myPrivateKey}
+            onSelectUser={setSelectedUserProfile}
+            onToggleFriends={() => setShowFriends(prev => !prev)}
+            showFriends={showFriends}
+            onSaveRoom={handleSaveRoomToggle}
+            isSaved={savedRooms.includes(roomId)}
+            customRoomName={customRoomNames[roomId]}
+            onRenameRoom={handleRenameRoom}
+            onToggleMobileSidebar={() => setShowMobileSidebar(true)}
+            onInitiateCall={(type, targetName) => webrtc.initiateCall(roomId, targetName, type)}
+          />
+        </ErrorBoundary>
       )}
 
       <div 

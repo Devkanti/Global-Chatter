@@ -374,7 +374,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
 
   const isFriendRoom = roomId && roomId.startsWith('PRIVATE-');
 
-  let defaultRoomName = `Private Room: ${roomId}`;
+  let defaultRoomName = `Room Code: ${roomId}`;
   if (isGlobal) {
     defaultRoomName = 'Global Chat Room';
   } else if (isFriendRoom) {

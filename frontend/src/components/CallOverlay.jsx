@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Phone, PhoneOff, PhoneCall, Mic, MicOff, Video, VideoOff, Monitor, MonitorOff } from 'lucide-react';
+import { Phone, PhoneOff, PhoneCall, Mic, MicOff, Video, VideoOff, Monitor, MonitorOff, PictureInPicture, Maximize, Minimize, SwitchCamera } from 'lucide-react';
 
 export default function CallOverlay({ 
   callState, 
@@ -15,10 +15,34 @@ export default function CallOverlay({
   isScreenSharing,
   onToggleMute,
   onToggleVideo,
-  onToggleScreenShare
+  onToggleScreenShare,
+  onToggleCamera
 }) {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = () => {
+    const container = document.querySelector('.call-container');
+    if (!container) return;
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().then(() => setIsFullscreen(true)).catch(err => console.log(err));
+    } else {
+      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(err => console.log(err));
+    }
+  };
+
+  const togglePiP = async () => {
+    try {
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture();
+      } else if (remoteVideoRef.current && callType === 'video') {
+        await remoteVideoRef.current.requestPictureInPicture();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
     if (localVideoRef.current && localStream) {
@@ -123,11 +147,20 @@ export default function CallOverlay({
               
               {callType === 'video' && (
                 <>
-                  <button className={`control-btn ${isVideoOff ? 'disabled' : ''}`} onClick={onToggleVideo}>
+                  <button className="control-btn" onClick={onToggleCamera} title="Flip Camera">
+                    <SwitchCamera size={20} />
+                  </button>
+                  <button className={`control-btn ${isVideoOff ? 'disabled' : ''}`} onClick={onToggleVideo} title="Toggle Video">
                     {isVideoOff ? <VideoOff size={20} /> : <Video size={20} />}
                   </button>
-                  <button className={`control-btn ${isScreenSharing ? 'active' : ''}`} onClick={onToggleScreenShare}>
+                  <button className={`control-btn ${isScreenSharing ? 'active' : ''}`} onClick={onToggleScreenShare} title="Screen Share">
                     {isScreenSharing ? <MonitorOff size={20} /> : <Monitor size={20} />}
+                  </button>
+                  <button className="control-btn" onClick={togglePiP} title="Picture in Picture">
+                    <PictureInPicture size={20} />
+                  </button>
+                  <button className="control-btn" onClick={toggleFullscreen} title="Fullscreen">
+                    {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
                   </button>
                 </>
               )}

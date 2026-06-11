@@ -677,6 +677,7 @@ function App() {
         onToggleVideo={webrtc.toggleVideo}
         isScreenSharing={webrtc.isScreenSharing}
         onToggleScreenShare={webrtc.toggleScreenShare}
+        onToggleCamera={webrtc.toggleCamera}
       />
       
       <InstallPrompt />

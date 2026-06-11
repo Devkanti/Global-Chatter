@@ -20,6 +20,7 @@ export function useWebRTC(currentUser) {
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
+  const [currentFacingMode, setCurrentFacingMode] = useState('user');
 
   const pcRef = useRef(null);
 
@@ -44,13 +45,19 @@ export function useWebRTC(currentUser) {
   const initLocalStream = async (type) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: type === 'video',
+        video: type === 'video' ? {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          frameRate: { ideal: 30, max: 60 },
+          facingMode: currentFacingMode
+        } : false,
         audio: true
       });
       setLocalStream(stream);
       return stream;
     } catch (err) {
       console.error('Error accessing media devices:', err);
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Camera/Microphone access denied.' }));
       return null;
     }
   };
@@ -171,6 +178,39 @@ export function useWebRTC(currentUser) {
     }
   };
 
+  const toggleCamera = async () => {
+    if (callType !== 'video') return;
+    const newMode = currentFacingMode === 'user' ? 'environment' : 'user';
+    setCurrentFacingMode(newMode);
+    
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { 
+          width: { ideal: 1280 }, 
+          height: { ideal: 720 }, 
+          frameRate: { ideal: 30, max: 60 },
+          facingMode: newMode 
+        }
+      });
+      const videoTrack = stream.getVideoTracks()[0];
+      
+      if (pcRef.current) {
+        const sender = pcRef.current.getSenders().find(s => s.track && s.track.kind === 'video');
+        if (sender) sender.replaceTrack(videoTrack);
+      }
+      
+      setLocalStream(prevStream => {
+        if (!prevStream) return stream;
+        const oldVideoTrack = prevStream.getVideoTracks()[0];
+        if (oldVideoTrack) oldVideoTrack.stop();
+        return new MediaStream([videoTrack, ...prevStream.getAudioTracks()]);
+      });
+    } catch(err) {
+      console.error('Flip camera failed', err);
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Failed to switch camera.' }));
+    }
+  };
+
   // SOCKET LISTENERS
   useEffect(() => {
     const handleIncoming = ({ roomId, type, callerName }) => {
@@ -259,6 +299,7 @@ export function useWebRTC(currentUser) {
     toggleMute,
     toggleVideo,
     toggleScreenShare,
+    toggleCamera,
     isScreenSharing
   };
 }

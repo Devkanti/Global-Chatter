@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { socket } from '../socket';
-import { Send, Check, CheckCheck, Copy, CheckCircle2, LogOut, Users, PanelRightOpen, PanelRightClose, Bookmark, BookmarkCheck, Edit2, Menu, Globe, Hash, Video, Phone, Mic, Square, Play, Pause, Search, X } from 'lucide-react';
+import { Send, Check, CheckCheck, Copy, CheckCircle2, LogOut, Users, PanelRightOpen, PanelRightClose, Bookmark, BookmarkCheck, Edit2, Menu, Globe, Hash, Video, Phone, Mic, Square, Play, Pause, Search, X, Trash2 } from 'lucide-react';
+import AudioVisualizer from './AudioVisualizer';
 import { getAvatarGradient, censorText } from '../utils';
 import { encryptMessage, decryptMessage } from '../crypto';
 
@@ -20,6 +21,8 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
   const [replyingTo, setReplyingTo] = useState(null);
   const [hoveredMessage, setHoveredMessage] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [recordingStream, setRecordingStream] = useState(null);
+  const [recordedAudioBase64, setRecordedAudioBase64] = useState(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const messagesEndRef = useRef(null);
@@ -316,6 +319,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setRecordingStream(stream);
       mediaRecorderRef.current = new MediaRecorder(stream);
       audioChunksRef.current = [];
       mediaRecorderRef.current.ondataavailable = (e) => {
@@ -325,7 +329,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const reader = new FileReader();
         reader.readAsDataURL(blob);
-        reader.onloadend = () => sendAudioMessage(reader.result);
+        reader.onloadend = () => setRecordedAudioBase64(reader.result);
         stream.getTracks().forEach(t => t.stop());
       };
       mediaRecorderRef.current.start();
@@ -340,7 +344,12 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+      setRecordingStream(null);
     }
+  };
+
+  const cancelRecording = () => {
+    setRecordedAudioBase64(null);
   };
 
   const handleKeyDown = (e) => {
@@ -768,32 +777,54 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
             <button onClick={() => setReplyingTo(null)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}>×</button>
           </div>
         )}
-        <form onSubmit={handleSend} className="chat-input-form" style={{ borderRadius: replyingTo ? '0 0 24px 24px' : '24px' }}>
-          <textarea
-            ref={textareaRef}
-            placeholder={isRecording ? "Recording audio..." : "Start typing..."}
-            value={inputValue}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            rows={1}
-            disabled={isRecording}
-          />
-          {isRecording ? (
-            <button type="button" onClick={stopRecording} className="btn-icon" style={{ flexShrink: 0, marginBottom: '4px', color: '#ef4444' }}>
-              <Square size={18} fill="currentColor" />
-            </button>
+        <form onSubmit={handleSend} className="chat-input-form" style={{ borderRadius: replyingTo ? '0 0 24px 24px' : '24px', overflow: 'hidden' }}>
+          {recordedAudioBase64 ? (
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0 0.5rem' }}>
+              <audio controls src={recordedAudioBase64} style={{ flex: 1, height: '36px' }} />
+              <button type="button" onClick={cancelRecording} className="btn-icon" style={{ flexShrink: 0, color: '#ef4444' }}>
+                <Trash2 size={18} />
+              </button>
+              <button type="button" onClick={() => { sendAudioMessage(recordedAudioBase64); cancelRecording(); }} className="btn-icon" style={{ flexShrink: 0, color: '#10b981' }}>
+                <Send size={18} />
+              </button>
+            </div>
+          ) : isRecording ? (
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0 0.5rem' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 1.5s infinite' }} />
+              <span style={{ fontSize: '0.85rem', color: '#ef4444', fontWeight: '600' }}>Recording</span>
+              <div style={{ flex: 1 }}>
+                <AudioVisualizer stream={recordingStream} />
+              </div>
+            </div>
           ) : (
-            <>
-              {inputValue.trim().length === 0 ? (
-                <button type="button" onClick={startRecording} className="btn-icon" style={{ flexShrink: 0, marginBottom: '4px' }}>
-                  <Mic size={18} />
-                </button>
-              ) : (
-                <button type="submit" className="btn-icon" style={{ flexShrink: 0, marginBottom: '4px' }}>
-                  <Send size={18} />
-                </button>
-              )}
-            </>
+            <textarea
+              ref={textareaRef}
+              placeholder="Start typing..."
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              rows={1}
+            />
+          )}
+
+          {!recordedAudioBase64 && (
+            isRecording ? (
+              <button type="button" onClick={stopRecording} className="btn-icon" style={{ flexShrink: 0, marginBottom: '4px', color: '#ef4444' }}>
+                <Square size={18} fill="currentColor" />
+              </button>
+            ) : (
+              <>
+                {inputValue.trim().length === 0 ? (
+                  <button type="button" onClick={startRecording} className="btn-icon" style={{ flexShrink: 0, marginBottom: '4px' }}>
+                    <Mic size={18} />
+                  </button>
+                ) : (
+                  <button type="submit" className="btn-icon" style={{ flexShrink: 0, marginBottom: '4px' }}>
+                    <Send size={18} />
+                  </button>
+                )}
+              </>
+            )
           )}
         </form>
       </div>

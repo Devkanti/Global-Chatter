@@ -7,7 +7,7 @@ import SettingsModal from './components/SettingsModal';
 import UserProfileModal from './components/UserProfileModal';
 import CallOverlay from './components/CallOverlay';
 import Toast from './components/Toast';
-import { MessageSquare, Globe, KeyRound, Plus, Settings, Sun, Moon, PanelRightClose, PanelRightOpen, ArrowRight, Sparkles, User, Mail, Lock, User as UserIcon } from 'lucide-react';
+import { MessageSquare, Globe, KeyRound, Plus, Settings, Sun, Moon, PanelRightClose, PanelRightOpen, ArrowRight, Sparkles, User, Mail, Lock, User as UserIcon, ChevronRight, Hash } from 'lucide-react';
 import { initCrypto } from './crypto';
 import { socket, BACKEND_URL } from './socket';
 import { useWebRTC } from './useWebRTC';
@@ -529,84 +529,114 @@ function App() {
         // Room Selector Screen
         <div className="chat-area glass glass-panel" style={{ alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
           <div className="animate-fade-in" style={{ width: '100%', maxWidth: '600px', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '0.5rem', letterSpacing: '-1px', color: 'var(--text-main)' }}>Choose a Room</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Where would you like to go, <strong style={{ color: 'var(--text-main)' }}>{username}</strong>?</p>
+            <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+              <h2 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '0.5rem', letterSpacing: '-1px', color: 'var(--text-main)' }}>Where to?</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Welcome back, <strong style={{ color: 'var(--text-main)' }}>{username}</strong>. Choose a room.</p>
             </div>
 
-            <div className="room-options-grid" style={{ margin: 0 }}>
-              <button className="room-card" onClick={handleJoinGlobal}>
-                <Globe size={40} color="var(--primary)" />
-                <div>
-                  <h3>Global Chat</h3>
-                  <p>Talk with everyone online</p>
+            <div className="room-options-grid" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', margin: '0 auto', width: '100%', maxWidth: '440px' }}>
+              <button 
+                onClick={handleJoinGlobal} 
+                style={{ 
+                  display: 'flex', alignItems: 'center', textAlign: 'left', padding: '1rem 1.25rem', 
+                  background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', 
+                  borderRadius: '16px', transition: 'all 0.2s', cursor: 'pointer', gap: '1.25rem' 
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.3)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.transform = 'translateY(0)' }}
+              >
+                <div style={{ background: 'rgba(168, 85, 247, 0.1)', width: '48px', height: '48px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(168, 85, 247, 0.2)' }}>
+                  <Globe size={24} color="#a855f7" />
                 </div>
+                <div style={{ flex: 1 }}>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: 'var(--text-main)', margin: '0 0 0.2rem 0' }}>Global Chat</h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>Join the public discussion</p>
+                </div>
+                <div style={{ color: 'var(--text-muted)' }}><ChevronRight size={20} /></div>
               </button>
               
-              <button className="room-card" onClick={handleCreatePrivate}>
-                <Plus size={40} color="var(--primary)" />
-                <div>
-                  <h3>New Private Room</h3>
-                  <p>Create a secret chat</p>
+              <button 
+                onClick={handleCreatePrivate} 
+                style={{ 
+                  display: 'flex', alignItems: 'center', textAlign: 'left', padding: '1rem 1.25rem', 
+                  background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', 
+                  borderRadius: '16px', transition: 'all 0.2s', cursor: 'pointer', gap: '1.25rem' 
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.3)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.transform = 'translateY(0)' }}
+              >
+                <div style={{ background: 'rgba(16, 185, 129, 0.1)', width: '48px', height: '48px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                  <Plus size={24} color="#10b981" />
                 </div>
+                <div style={{ flex: 1 }}>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: 'var(--text-main)', margin: '0 0 0.2rem 0' }}>New Private Room</h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>Create a secure, invite-only chat</p>
+                </div>
+                <div style={{ color: 'var(--text-muted)' }}><ChevronRight size={20} /></div>
               </button>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1.5rem 0' }}>
-              <div style={{ flex: 1, height: '1px', background: 'var(--panel-border)' }}></div>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600', letterSpacing: '1px' }}>OR JOIN EXISTING</span>
-              <div style={{ flex: 1, height: '1px', background: 'var(--panel-border)' }}></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '2rem auto', width: '100%', maxWidth: '440px' }}>
+              <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.05)' }}></div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '600', letterSpacing: '2px' }}>OR JOIN EXISTING</span>
+              <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.05)' }}></div>
             </div>
 
-            <form onSubmit={handleJoinPrivate} className="room-input-group" style={{ 
+            <form onSubmit={handleJoinPrivate} style={{ 
               display: 'flex', 
-              gap: '0.4rem', 
-              background: 'rgba(0,0,0,0.15)', 
-              padding: '0.35rem', 
-              borderRadius: '12px', 
-              border: '1px solid var(--panel-border)',
-              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)',
-              maxWidth: '320px',
+              gap: '0.5rem', 
+              width: '100%',
+              maxWidth: '440px',
               margin: '0 auto',
-              backdropFilter: 'blur(10px)'
             }}>
-              <input
-                type="text"
-                placeholder="ROOM CODE"
-                value={roomIdInput}
-                onChange={(e) => setRoomIdInput(e.target.value.toUpperCase())}
-                className="search-input-no-ring"
-                style={{ 
-                  flex: 1, 
-                  background: 'transparent', 
-                  border: 'none', 
-                  textTransform: 'uppercase', 
-                  fontSize: '0.9rem', 
-                  letterSpacing: '2px', 
-                  textAlign: 'center', 
-                  color: 'var(--text-main)', 
-                  outline: 'none',
-                  fontWeight: '600',
-                  padding: '0.4rem'
-                }}
-                maxLength={6}
-              />
+              <div style={{ flex: 1, position: 'relative' }}>
+                <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
+                  <Hash size={18} />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Enter Room Code"
+                  value={roomIdInput}
+                  onChange={(e) => setRoomIdInput(e.target.value.toUpperCase())}
+                  style={{ 
+                    width: '100%',
+                    background: 'rgba(255, 255, 255, 0.02)', 
+                    border: '1px solid rgba(255, 255, 255, 0.08)', 
+                    borderRadius: '12px',
+                    padding: '0.8rem 1rem 0.8rem 2.5rem',
+                    color: 'var(--text-main)', 
+                    outline: 'none',
+                    fontSize: '1rem',
+                    transition: 'all 0.2s',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'; }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'; }}
+                  maxLength={6}
+                />
+              </div>
               <button 
                 type="submit" 
-                className="btn-primary" 
                 disabled={!roomIdInput.trim()}
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
-                  justifyContent: 'center',
-                  gap: '0.3rem', 
-                  padding: '0.4rem 1.25rem', 
-                  borderRadius: '8px',
+                  gap: '0.5rem', 
+                  background: roomIdInput.trim() ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
+                  color: roomIdInput.trim() ? 'white' : 'var(--text-muted)',
+                  border: 'none',
+                  padding: '0 1.25rem',
+                  borderRadius: '12px',
                   fontWeight: '600',
-                  fontSize: '0.85rem'
+                  cursor: roomIdInput.trim() ? 'pointer' : 'not-allowed',
+                  transition: 'all 0.2s',
+                  boxShadow: roomIdInput.trim() ? '0 4px 12px var(--primary-glow)' : 'none'
                 }}
               >
-                <KeyRound size={16} /> Join
+                Join
+                <ArrowRight size={18} />
               </button>
             </form>
           </div>

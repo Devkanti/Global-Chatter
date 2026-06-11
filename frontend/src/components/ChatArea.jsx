@@ -400,7 +400,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
 
   let defaultRoomName = `Room Code: ${roomId}`;
   if (isGlobal) {
-    defaultRoomName = 'Global Chat Room';
+    defaultRoomName = 'Global Chat';
   } else if (isFriendRoom) {
     const users = roomId.replace('PRIVATE-', '').split('-');
     defaultRoomName = users[0] === currentUser ? users[1] : users[0];

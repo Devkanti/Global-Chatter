@@ -1,4 +1,4 @@
-import { Heart, Check, X, UserPlus } from 'lucide-react';
+import { User, Check, X, UserPlus } from 'lucide-react';
 import { getAvatarGradient } from '../utils';
 import { socket } from '../socket';
 
@@ -8,9 +8,9 @@ export default function FriendsSidebar({ currentUser, userProfiles, userStatuses
   return (
     <div className="friends-sidebar glass glass-panel">
       <div className="sidebar-header" style={{ padding: '1.5rem 1rem 1rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 className="sidebar-title" style={{ padding: '0 0.5rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-main)' }}>
-          <div style={{ background: '#ef4444', padding: '0.4rem', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)' }}>
-            <Heart size={20} strokeWidth={2.5} color="white" />
+        <h2 className="sidebar-title" style={{ padding: '0 0.5rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '1.4rem', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-main)' }}>
+          <div style={{ background: '#fda4af', width: '36px', height: '36px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(253, 164, 175, 0.3)' }}>
+            <User size={20} strokeWidth={2.5} color="#1e1e2e" className="animated-icon" />
           </div>
           Friends
         </h2>

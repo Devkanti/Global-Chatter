@@ -11,7 +11,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
       <div className="sidebar-header" style={{ padding: '1.5rem 1rem 1rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 className="sidebar-title" style={{ padding: '0 0.5rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '1.4rem', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-main)' }}>
           <div style={{ background: '#c4b5fd', width: '36px', height: '36px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(196, 181, 253, 0.3)' }}>
-            <Bookmark size={20} strokeWidth={2.5} color="#1e1e2e" className="animated-bookmark" />
+            <Bookmark size={20} strokeWidth={2.5} color="#1e1e2e" className="animated-icon" />
           </div>
           Your Chats
         </h2>

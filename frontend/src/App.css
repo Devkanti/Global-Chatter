@@ -803,7 +803,7 @@
   75% { transform: scale(1.1) translateY(-2px) rotate(5deg); }
 }
 
-.animated-bookmark {
+.animated-icon {
   animation: bookmark-bounce 3s ease-in-out infinite;
   display: inline-block;
   transform-origin: center;

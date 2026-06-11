@@ -329,7 +329,8 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         if (e.data.size > 0) audioChunksRef.current.push(e.data);
       };
       mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const type = mediaRecorderRef.current.mimeType || 'audio/mp4';
+        const blob = new Blob(audioChunksRef.current, { type });
         const reader = new FileReader();
         reader.readAsDataURL(blob);
         reader.onloadend = () => setRecordedAudioBase64(reader.result);

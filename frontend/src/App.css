@@ -928,8 +928,8 @@
     height: 100% !important;
     transform: none !important;
     box-shadow: none !important;
-    background: var(--panel-bg);
-    backdrop-filter: blur(24px);
+    background: var(--header-bg) !important;
+    backdrop-filter: blur(24px) !important;
     border-left: 1px solid var(--panel-border);
     border-radius: 20px 0 0 20px !important;
   }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { socket } from '../socket';
-import { Send, Check, CheckCheck, Copy, CheckCircle2, LogOut, Users, PanelRightOpen, PanelRightClose, Bookmark, BookmarkCheck, Edit2, Menu, Globe, Hash, Video, Phone, Mic, Square, Play, Pause } from 'lucide-react';
+import { Send, Check, CheckCheck, Copy, CheckCircle2, LogOut, Users, PanelRightOpen, PanelRightClose, Bookmark, BookmarkCheck, Edit2, Menu, Globe, Hash, Video, Phone, Mic, Square, Play, Pause, Search, X } from 'lucide-react';
 import { getAvatarGradient, censorText } from '../utils';
 import { encryptMessage, decryptMessage } from '../crypto';
 
@@ -15,6 +15,8 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
   const [hoveredMessage, setHoveredMessage] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -500,6 +502,34 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
             </>
           )}
 
+          {/* Search Action */}
+          {isSearchOpen ? (
+            <div className="animate-fade-in" style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '20px', padding: '0.2rem 0.6rem' }}>
+              <Search size={14} color="var(--text-muted)" />
+              <input 
+                autoFocus
+                type="text" 
+                placeholder="Search..." 
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', fontSize: '0.9rem', width: '120px', padding: '0.3rem', outline: 'none' }}
+              />
+              <button onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '2px', display: 'flex' }}>
+                <X size={14} />
+              </button>
+            </div>
+          ) : (
+            <button 
+              onClick={() => setIsSearchOpen(true)}
+              style={{ background: 'transparent', color: 'var(--text-muted)', border: 'none', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', transition: 'all 0.2s', display: 'flex' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--panel-bg)'; e.currentTarget.style.color = 'var(--text-main)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+              title="Search Messages"
+            >
+              <Search size={20} />
+            </button>
+          )}
+
           {/* Core Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <button 
@@ -583,7 +613,12 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
       </div>
 
       <div className="chat-messages">
-        {messages.map((msg, index) => {
+        {messages.filter(msg => {
+          if (!searchQuery) return true;
+          if (msg.type === 'system') return false;
+          return msg.text.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                 msg.sender.toLowerCase().includes(searchQuery.toLowerCase());
+        }).map((msg, index, filteredMessages) => {
           if (msg.type === 'system') {
             return (
               <div key={msg.id} className="system-message animate-fade-in">
@@ -595,8 +630,8 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
           const isMine = msg.sender === currentUser;
           const isRead = msg.readBy && msg.readBy.length > 0;
 
-          const prevMsg = messages[index - 1];
-          const nextMsg = messages[index + 1];
+          const prevMsg = filteredMessages[index - 1];
+          const nextMsg = filteredMessages[index + 1];
           
           const isGroupedTop = prevMsg && prevMsg.sender === msg.sender && prevMsg.type !== 'system' && (msg.timestamp - prevMsg.timestamp < 60000);
           const isGroupedBottom = nextMsg && nextMsg.sender === msg.sender && nextMsg.type !== 'system' && (nextMsg.timestamp - msg.timestamp < 60000);
@@ -649,7 +684,15 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
                   </div>
                 ) : (
                   <div className="message-bubble" style={{ whiteSpace: 'pre-wrap' }}>
-                    {msg.text}
+                    {searchQuery ? (
+                      // Highlight searched text
+                      msg.text.split(new RegExp(`(${searchQuery})`, 'gi')).map((part, i) => 
+                        part.toLowerCase() === searchQuery.toLowerCase() ? 
+                          <mark key={i} style={{ background: '#3b82f6', color: 'white', padding: '0 2px', borderRadius: '2px' }}>{part}</mark> : part
+                      )
+                    ) : (
+                      msg.text
+                    )}
                   </div>
                 )}
                 

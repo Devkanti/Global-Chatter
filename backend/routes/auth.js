@@ -56,17 +56,18 @@ router.post('/signup', async (req, res) => {
     await otpEntry.save();
 
     // Send OTP via Nodemailer
-    try {
-      await transporter.sendMail({
-        from: `"Global Chatter" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: 'Verify your Global Chatter Account',
-        html: `<p>Your verification code is: <strong>${otpCode}</strong></p><p>This code will expire in 5 minutes.</p>`
-      });
-      console.log(`[DEBUG] OTP for ${email} sent via Nodemailer. Code: ${otpCode}`);
-    } catch (emailError) {
-      console.error(`[DEBUG] Failed to send email via Nodemailer to ${email}. Code was: ${otpCode}`, emailError);
-    }
+    console.log(`[DEBUG] Saving OTP for ${email}. Code: ${otpCode}`);
+    
+    transporter.sendMail({
+      from: `"Global Chatter" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Verify your Global Chatter Account',
+      html: `<p>Your verification code is: <strong>${otpCode}</strong></p><p>This code will expire in 5 minutes.</p>`
+    }).then(() => {
+      console.log(`[DEBUG] OTP for ${email} sent via Nodemailer.`);
+    }).catch((emailError) => {
+      console.error(`[DEBUG] Failed to send email via Nodemailer to ${email}.`, emailError);
+    });
 
     res.status(200).json({ message: 'OTP processed', email });
   } catch (error) {

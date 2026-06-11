@@ -2,17 +2,12 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 const User = require('../models/User');
 const OTP = require('../models/OTP');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+// Google Apps Script Web App URL (to bypass Render's SMTP block)
+const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
+const SCRIPT_SECRET = process.env.SCRIPT_SECRET;
 
 // Utility to generate 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -55,18 +50,23 @@ router.post('/signup', async (req, res) => {
     const otpEntry = new OTP({ email, otp: otpCode });
     await otpEntry.save();
 
-    // Send OTP via Nodemailer
+    // Send OTP via Google Apps Script
     console.log(`[DEBUG] Saving OTP for ${email}. Code: ${otpCode}`);
     
-    transporter.sendMail({
-      from: `"Global Chatter" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Verify your Global Chatter Account',
-      html: `<p>Your verification code is: <strong>${otpCode}</strong></p><p>This code will expire in 5 minutes.</p>`
-    }).then(() => {
-      console.log(`[DEBUG] OTP for ${email} sent via Nodemailer.`);
-    }).catch((emailError) => {
-      console.error(`[DEBUG] Failed to send email via Nodemailer to ${email}.`, emailError);
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        email: email,
+        otpCode: otpCode,
+        secretToken: SCRIPT_SECRET
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log(`[DEBUG] OTP for ${email} sent via Google Script successfully.`);
+    })
+    .catch((emailError) => {
+      console.error(`[DEBUG] Failed to send email via Google Script to ${email}.`, emailError);
     });
 
     res.status(200).json({ message: 'OTP processed', email });

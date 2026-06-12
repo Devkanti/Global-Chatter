@@ -144,6 +144,7 @@ io.on('connection', async (socket) => {
     
     socket.emit('friends:sync', friendsList);
     socket.emit('friend_requests:sync', requestsList);
+    socket.emit('blocked_users:sync', userDoc.blockedUsers || []);
 
     await syncUserData();
   });
@@ -255,6 +256,45 @@ io.on('connection', async (socket) => {
       user.privacyMode = mode;
       await user.save();
       await syncUserData();
+    }
+  });
+
+  socket.on('user:block', async (usernameToBlock) => {
+    if (!usernameToBlock || usernameToBlock === socket.username) return;
+    const user = await User.findById(socket.userId);
+    if (user && !user.blockedUsers.includes(usernameToBlock)) {
+      user.blockedUsers.push(usernameToBlock);
+      // Remove from friends if they are friends
+      const targetUser = await User.findOne({ username: usernameToBlock });
+      if (targetUser) {
+        user.friends = user.friends.filter(id => id.toString() !== targetUser._id.toString());
+        targetUser.friends = targetUser.friends.filter(id => id.toString() !== user._id.toString());
+        await targetUser.save();
+      }
+      await user.save();
+      socket.emit('blocked_users:sync', user.blockedUsers);
+      
+      // Resync friends if changed
+      if (targetUser) {
+        const myFriends = await User.find({ _id: { $in: user.friends } });
+        socket.emit('friends:sync', myFriends.map(f => f.username));
+        
+        const theirFriends = await User.find({ _id: { $in: targetUser.friends } });
+        const theirSockets = Array.from(socketUsers.entries()).filter(([id, data]) => data.username === usernameToBlock);
+        for (const [id] of theirSockets) {
+          io.to(id).emit('friends:sync', theirFriends.map(f => f.username));
+        }
+      }
+    }
+  });
+
+  socket.on('user:unblock', async (usernameToUnblock) => {
+    if (!usernameToUnblock) return;
+    const user = await User.findById(socket.userId);
+    if (user && user.blockedUsers.includes(usernameToUnblock)) {
+      user.blockedUsers = user.blockedUsers.filter(u => u !== usernameToUnblock);
+      await user.save();
+      socket.emit('blocked_users:sync', user.blockedUsers);
     }
   });
 
@@ -442,6 +482,18 @@ io.on('connection', async (socket) => {
     socketRateLimits.set(socket.id, recentTimestamps);
 
     const roomId = socket.roomId || 'global';
+    
+    if (roomId.startsWith('PRIVATE-')) {
+      const users = roomId.replace('PRIVATE-', '').split('-');
+      const otherUser = users.find(u => u !== socket.username);
+      if (otherUser) {
+        const targetUserDoc = await User.findOne({ username: otherUser });
+        if (targetUserDoc && targetUserDoc.blockedUsers.includes(socket.username)) {
+          socket.emit('system:warning', 'You have been blocked by this user.');
+          return;
+        }
+      }
+    }
     
     try {
       // Create new message in DB

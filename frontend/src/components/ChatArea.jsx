@@ -7,7 +7,7 @@ import CustomAudioPlayer from './CustomAudioPlayer';
 import { getAvatarGradient, censorText } from '../utils';
 import { encryptMessage, decryptMessage } from '../crypto';
 
-export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, userStatuses, userFriends, userPrivacyMode, userPublicKeys, myPrivateKey, onSelectUser, onSaveRoom, isSaved, onRenameRoom, onToggleMobileSidebar, onInitiateCall }) {
+export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, userStatuses, userFriends, userPrivacyMode, blockedUsers = [], userPublicKeys, myPrivateKey, onSelectUser, onSaveRoom, isSaved, onRenameRoom, onToggleMobileSidebar, onInitiateCall }) {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [typingUsers, setTypingUsers] = useState(new Set());
@@ -660,46 +660,47 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '0.75rem', borderRadius: '12px', marginBottom: '1rem', color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
           🔒 Security Notice: Messages in this chat are encrypted in transit. To protect your privacy, never share your password, credit card details, or sensitive personal information with anyone in the chat.
         </div>
-        {messages.filter(msg => {
-          if (!searchQuery) return true;
-          if (msg.type === 'system') return false;
-          return msg.text.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                 msg.sender.toLowerCase().includes(searchQuery.toLowerCase());
-        }).map((msg, index, filteredMessages) => {
-          if (msg.type === 'system') {
+        <div className="messages-scroll-area">
+          {messages.filter(msg => !blockedUsers.includes(msg.sender)).filter(msg => {
+            if (!searchQuery) return true;
+            if (msg.type === 'system') return false;
+            return msg.text.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                   msg.sender.toLowerCase().includes(searchQuery.toLowerCase());
+          }).map((msg, index, filteredMessages) => {
+            if (msg.type === 'system') {
+              return (
+                <div key={msg.id} className="system-message animate-fade-in">
+                  {msg.text}
+                </div>
+              );
+            }
+
+            const isMine = msg.sender === currentUser;
+            const isRead = msg.readBy && msg.readBy.length > 0;
+
+            const prevMsg = filteredMessages[index - 1];
+            const nextMsg = filteredMessages[index + 1];
+            
+            const isGroupedTop = prevMsg && prevMsg.sender === msg.sender && prevMsg.type !== 'system' && (msg.timestamp - prevMsg.timestamp < 60000);
+            const isGroupedBottom = nextMsg && nextMsg.sender === msg.sender && nextMsg.type !== 'system' && (nextMsg.timestamp - msg.timestamp < 60000);
+            
+            const isSystem = false;
+            const status = userStatuses?.[msg.sender] || 'online';
+            
+            const isPrivacyEnabled = userPrivacyMode?.[msg.sender] && !userFriends?.includes(msg.sender) && msg.sender !== currentUser;
+            const displayName = isPrivacyEnabled ? 'Anonymous User' : msg.sender;
+            const displayAvatar = isPrivacyEnabled ? null : (userProfiles && userProfiles[msg.sender]);
+
+            let dotColor = '#10b981';
+            let dotBorder = '2px solid var(--panel-bg)';
+            if (status === 'dnd') dotColor = '#f59e0b';
+            if (status === 'invisible') {
+              dotColor = 'transparent';
+              dotBorder = '2px solid #9ba4b5';
+            }
+
             return (
-              <div key={msg.id} className="system-message animate-fade-in">
-                {msg.text}
-              </div>
-            );
-          }
-
-          const isMine = msg.sender === currentUser;
-          const isRead = msg.readBy && msg.readBy.length > 0;
-
-          const prevMsg = filteredMessages[index - 1];
-          const nextMsg = filteredMessages[index + 1];
-          
-          const isGroupedTop = prevMsg && prevMsg.sender === msg.sender && prevMsg.type !== 'system' && (msg.timestamp - prevMsg.timestamp < 60000);
-          const isGroupedBottom = nextMsg && nextMsg.sender === msg.sender && nextMsg.type !== 'system' && (nextMsg.timestamp - msg.timestamp < 60000);
-          
-          const isSystem = false;
-          const status = userStatuses?.[msg.sender] || 'online';
-          
-          const isPrivacyEnabled = userPrivacyMode?.[msg.sender] && !userFriends?.includes(msg.sender) && msg.sender !== currentUser;
-          const displayName = isPrivacyEnabled ? 'Anonymous User' : msg.sender;
-          const displayAvatar = isPrivacyEnabled ? null : (userProfiles && userProfiles[msg.sender]);
-
-          let dotColor = '#10b981';
-          let dotBorder = '2px solid var(--panel-bg)';
-          if (status === 'dnd') dotColor = '#f59e0b';
-          if (status === 'invisible') {
-            dotColor = 'transparent';
-            dotBorder = '2px solid #9ba4b5';
-          }
-
-          return (
-            <div 
+              <div 
               key={msg.id} 
               className={`chat-message-row ${isMine ? 'mine' : 'other'} animate-fade-in`}
             >

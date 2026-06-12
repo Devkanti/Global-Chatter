@@ -35,6 +35,7 @@ function App() {
   const [userFriends, setUserFriends] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
   const [sentRequests, setSentRequests] = useState(new Set());
+  const [blockedUsers, setBlockedUsers] = useState([]);
   const [userPrivacyMode, setUserPrivacyMode] = useState({});
   const [userPublicKeys, setUserPublicKeys] = useState({});
   const [toastMessage, setToastMessage] = useState(null);
@@ -129,6 +130,10 @@ function App() {
 
     socket.on('privacy:sync', (privacySettings) => {
       setUserPrivacyMode(privacySettings);
+    });
+
+    socket.on('blocked_users:sync', (users) => {
+      setBlockedUsers(users);
     });
 
     socket.on('keys:sync', (keysMap) => {
@@ -773,6 +778,7 @@ function App() {
             userStatuses={userStatuses}
             userFriends={userFriends}
             userPrivacyMode={userPrivacyMode}
+            blockedUsers={blockedUsers}
             userPublicKeys={userPublicKeys}
             myPrivateKey={myPrivateKey}
             onSelectUser={setSelectedUserProfile}
@@ -818,6 +824,7 @@ function App() {
         userStats={userStats}
         userStatuses={userStatuses}
         userPrivacyMode={userPrivacyMode}
+        blockedUsers={blockedUsers}
       />
 
       <UserProfileModal
@@ -833,6 +840,7 @@ function App() {
         onSendRequest={(user) => setSentRequests(prev => { const n = new Set(prev); n.add(user); return n; })}
         onCancelRequest={(user) => setSentRequests(prev => { const n = new Set(prev); n.delete(user); return n; })}
         userPrivacyMode={userPrivacyMode}
+        blockedUsers={blockedUsers}
         onJoinRoom={(newRoomId) => {
           setSelectedUserProfile(null);
           joinRoom(newRoomId);

@@ -1,8 +1,8 @@
 import { socket } from '../socket';
-import { X, UserPlus, UserMinus, MessageCircle, Clock, Check } from 'lucide-react';
+import { X, UserPlus, UserMinus, MessageCircle, Clock, Check, Ban } from 'lucide-react';
 import { getAvatarGradient } from '../utils';
 
-export default function UserProfileModal({ isOpen, onClose, targetUser, currentUser, userProfiles, userStatuses, userFriends, friendRequests, sentRequests = new Set(), onSendRequest, onCancelRequest, userPrivacyMode, onJoinRoom }) {
+export default function UserProfileModal({ isOpen, onClose, targetUser, currentUser, userProfiles, userStatuses, userFriends, friendRequests, sentRequests = new Set(), onSendRequest, onCancelRequest, userPrivacyMode, blockedUsers = [], onJoinRoom }) {
   if (!isOpen || !targetUser) return null;
   if (!isOpen || !targetUser) return null;
   const targetStatus = userStatuses[targetUser] || 'online';
@@ -104,6 +104,40 @@ export default function UserProfileModal({ isOpen, onClose, targetUser, currentU
               Message
             </button>
           </div>
+        )}
+        
+        {!isSelf && (
+          <button 
+            onClick={() => {
+              if (blockedUsers.includes(targetUser)) {
+                socket.emit('user:unblock', targetUser);
+              } else {
+                socket.emit('user:block', targetUser);
+                onClose();
+              }
+            }}
+            style={{ 
+              width: '100%', 
+              marginTop: '1rem',
+              padding: '0.75rem', 
+              borderRadius: '12px', 
+              background: 'rgba(239, 68, 68, 0.1)', 
+              color: '#ef4444', 
+              border: '1px solid rgba(239, 68, 68, 0.3)', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: '0.5rem', 
+              fontWeight: '600', 
+              transition: 'all 0.2s', 
+              cursor: 'pointer' 
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; }}
+          >
+            <Ban size={18} />
+            {blockedUsers.includes(targetUser) ? 'Unblock User' : 'Block User'}
+          </button>
         )}
       </div>
     </div>

@@ -3,7 +3,9 @@ import { socket, BACKEND_URL } from '../socket';
 import { X, ShieldAlert, Camera, Clock } from 'lucide-react';
 import { getAvatarGradient } from '../utils';
 
-export default function SettingsModal({ isOpen, onClose, currentUser, userProfiles, userStats, userStatuses, userPrivacyMode }) {
+export default function SettingsModal({ isOpen, onClose, currentUser, userProfiles, userStats, userStatuses, userPrivacyMode, blockedUsers = [] }) {
+  const [activeTab, setActiveTab] = useState('account');
+  const [showBlockedList, setShowBlockedList] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isHoveringAvatar, setIsHoveringAvatar] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
@@ -323,9 +325,23 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
 
               <div style={{ borderTop: '1px solid var(--panel-border)', paddingTop: '1.5rem' }}>
                 <strong style={{ display: 'block', color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '0.25rem' }}>Safety & Moderation</strong>
-                <button style={{ background: 'transparent', color: 'var(--primary)', border: '1px solid var(--primary)', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.75rem' }} onClick={() => window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Blocked users list is empty.' }))}>
-                  View Blocked Users List
+                <button style={{ background: 'transparent', color: 'var(--primary)', border: '1px solid var(--primary)', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.75rem' }} onClick={() => setShowBlockedList(!showBlockedList)}>
+                  {showBlockedList ? 'Hide Blocked Users' : 'View Blocked Users List'}
                 </button>
+                {showBlockedList && (
+                  <div style={{ background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '12px', padding: '1rem', marginBottom: '1rem', maxHeight: '150px', overflowY: 'auto' }}>
+                    {blockedUsers.length === 0 ? (
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0, textAlign: 'center' }}>You haven't blocked anyone.</p>
+                    ) : (
+                      blockedUsers.map(user => (
+                        <div key={user} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--panel-border)' }}>
+                          <span style={{ color: 'var(--text-main)', fontSize: '0.9rem', fontWeight: '500' }}>{user}</span>
+                          <button onClick={() => socket.emit('user:unblock', user)} style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none', padding: '0.3rem 0.6rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: '600' }}>Unblock</button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: '1.4' }}>
                   Need to report a user for harassment or scams? Click the 🚩 flag icon next to their name inside the chat window.
                 </p>

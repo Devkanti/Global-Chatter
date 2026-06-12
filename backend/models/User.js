@@ -38,6 +38,9 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
+  blockedUsers: [{
+    type: String // usernames
+  }],
   status: {
     type: String,
     enum: ['online', 'dnd', 'invisible', 'offline'],

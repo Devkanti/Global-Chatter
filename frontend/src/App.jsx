@@ -592,12 +592,6 @@ function App() {
                 </div>
               </div>
               
-              {isSignUp && (
-                <p style={{ margin: '0.5rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.8rem', textAlign: 'center', lineHeight: '1.4' }}>
-                  To keep our chat rooms safe and free from spam bots, all signups are protected by secure verification. Multi-factor authentication (MFA) is available inside your account settings.
-                </p>
-              )}
-              
               <button type="submit" className="btn-primary" disabled={isLoading || !email || !password || (isSignUp && !username)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.85rem', borderRadius: '12px', fontWeight: '600', marginTop: '1rem', opacity: isLoading ? 0.7 : 1 }}>
                 {isLoading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Log In')} <ArrowRight size={18} />
               </button>

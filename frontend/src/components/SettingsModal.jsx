@@ -145,7 +145,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content animate-fade-in" style={{ background: 'var(--bg-color)', borderRadius: '24px', border: '1px solid var(--panel-border)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px var(--card-bg)', width: '100%', maxWidth: '750px', padding: '2.5rem', position: 'relative' }}>
+      <div className="modal-content animate-fade-in" style={{ background: 'var(--bg-color)', borderRadius: '24px', border: '1px solid var(--panel-border)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px var(--card-bg)', width: '100%', maxWidth: '900px', padding: '2.5rem', position: 'relative' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--hover-bg)' }}>
           <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-main)' }}>Settings</h2>
           <button onClick={onClose} style={{ background: 'var(--hover-bg)', color: 'var(--text-muted)', border: 'none', cursor: 'pointer', display: 'flex', padding: '0.5rem', borderRadius: '50%', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = 'var(--hover-bg-strong)'; e.currentTarget.style.color = 'var(--text-main)'; }} onMouseLeave={e => { e.currentTarget.style.background = 'var(--hover-bg)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>

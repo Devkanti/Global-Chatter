@@ -660,7 +660,6 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '0.75rem', borderRadius: '12px', marginBottom: '1rem', color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
           🔒 Security Notice: Messages in this chat are encrypted in transit. To protect your privacy, never share your password, credit card details, or sensitive personal information with anyone in the chat.
         </div>
-        <div className="messages-scroll-area">
           {messages.filter(msg => !blockedUsers.includes(msg.sender)).filter(msg => {
             if (!searchQuery) return true;
             if (msg.type === 'system') return false;

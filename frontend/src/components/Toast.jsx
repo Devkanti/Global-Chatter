@@ -58,7 +58,7 @@ export default function Toast({ message, type = 'info', onClose }) {
         borderRadius: '16px',
         zIndex: 99999,
         fontWeight: '600',
-        boxShadow: \`0 20px 40px rgba(0,0,0,0.6), 0 0 20px \${theme.glow}\`,
+        boxShadow: `0 20px 40px rgba(0,0,0,0.6), 0 0 20px ${theme.glow}`,
         display: 'flex',
         alignItems: 'center',
         gap: '1rem',

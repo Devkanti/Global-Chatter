@@ -20,7 +20,11 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
     try {
       const res = await fetch(`${BACKEND_URL}/auth/2fa/generate`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}` 
+        },
+        body: JSON.stringify({})
       });
       const data = await res.json();
       if (res.ok) {
@@ -30,7 +34,8 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
         window.dispatchEvent(new CustomEvent('app:toast', { detail: data.error || 'Failed to generate 2FA' }));
       }
     } catch (err) {
-      console.error(err);
+      console.error('2FA Generate Error:', err);
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Network error generating 2FA' }));
     }
   };
 
@@ -54,7 +59,8 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
         window.dispatchEvent(new CustomEvent('app:toast', { detail: data.error || 'Invalid Code' }));
       }
     } catch (err) {
-      console.error(err);
+      console.error('2FA Verify Error:', err);
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Network error verifying 2FA code' }));
     }
   };
 

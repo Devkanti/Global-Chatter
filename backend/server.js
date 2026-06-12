@@ -4,7 +4,6 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize');
 require('dotenv').config();
 const connectDB = require('./db');
 const webpush = require('web-push');
@@ -14,7 +13,7 @@ const Message = require('./models/Message');
 const Room = require('./models/Room');
 
 const app = express();
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:5173'];
 app.use(cors({
   origin: function (origin, callback) {
@@ -26,7 +25,6 @@ app.use(cors({
   }
 }));
 app.use(express.json());
-app.use(mongoSanitize());
 
 connectDB();
 

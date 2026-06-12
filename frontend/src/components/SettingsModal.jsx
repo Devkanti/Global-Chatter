@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { socket } from '../socket';
+import { socket, BACKEND_URL } from '../socket';
 import { X, ShieldAlert, Camera, Clock } from 'lucide-react';
 import { getAvatarGradient } from '../utils';
 
@@ -16,7 +16,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
 
   const handleGenerate2FA = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'}/auth/2fa/generate`, {
+      const res = await fetch(`${BACKEND_URL}/auth/2fa/generate`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -34,7 +34,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
 
   const handleVerify2FA = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'}/auth/2fa/verify-enable`, {
+      const res = await fetch(`${BACKEND_URL}/auth/2fa/verify-enable`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

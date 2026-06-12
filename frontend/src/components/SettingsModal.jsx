@@ -288,17 +288,36 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
 
               <div style={{ marginBottom: '1.5rem', borderTop: '1px solid var(--panel-border)', paddingTop: '1.5rem' }}>
                 <strong style={{ display: 'block', color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '0.25rem' }}>Message Privacy</strong>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: '0 0 0.75rem 0' }}>Who can send you direct messages?</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-main)', fontSize: '0.85rem' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                    <input type="radio" name="dm_privacy" checked={!userPrivacyMode?.[currentUser]} onChange={() => userPrivacyMode?.[currentUser] && socket.emit('user:toggle_privacy')} /> Everyone
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                    <input type="radio" name="dm_privacy" checked={!!userPrivacyMode?.[currentUser]} onChange={() => !userPrivacyMode?.[currentUser] && socket.emit('user:toggle_privacy')} /> Friends Only
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', opacity: 0.5 }} title="Coming soon">
-                    <input type="radio" name="dm_privacy" disabled /> Nobody
-                  </label>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: '0 0 1rem 0' }}>Who can send you direct messages?</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {['everyone', 'friends', 'nobody'].map(mode => {
+                    const currentPrivacy = userPrivacyMode?.[currentUser] || 'everyone';
+                    const isSelected = currentPrivacy === mode;
+                    return (
+                      <div key={mode} onClick={() => socket.emit('user:set_privacy', mode)} style={{
+                        display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', cursor: 'pointer',
+                        background: isSelected ? 'var(--primary-glow)' : 'var(--input-bg)',
+                        border: `1px solid ${isSelected ? 'var(--primary)' : 'var(--panel-border)'}`,
+                        borderRadius: '12px', transition: 'all 0.2s'
+                      }} onMouseEnter={e => !isSelected && (e.currentTarget.style.borderColor = 'var(--text-muted)')} onMouseLeave={e => !isSelected && (e.currentTarget.style.borderColor = 'var(--panel-border)')}>
+                        <div style={{
+                          width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
+                          border: `2px solid ${isSelected ? 'var(--primary)' : 'var(--text-muted)'}`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s'
+                        }}>
+                          {isSelected && <div style={{ width: '10px', height: '10px', background: 'var(--primary)', borderRadius: '50%' }} />}
+                        </div>
+                        <div>
+                          <strong style={{ display: 'block', fontSize: '0.95rem', color: isSelected ? 'var(--text-main)' : 'var(--text-muted)', textTransform: 'capitalize' }}>
+                            {mode === 'friends' ? 'Friends Only' : mode}
+                          </strong>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                            {mode === 'everyone' ? 'Anyone can send you direct messages.' : mode === 'friends' ? 'Only your friends can message you.' : 'No one can send you direct messages.'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

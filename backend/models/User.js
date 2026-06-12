@@ -47,8 +47,9 @@ const userSchema = new mongoose.Schema({
     type: String // roomIds
   }],
   privacyMode: {
-    type: Boolean,
-    default: false
+    type: String,
+    enum: ['everyone', 'friends', 'nobody', 'false', 'true'], // Legacy support for false/true
+    default: 'everyone',
   },
   reputationScore: {
     type: Number,

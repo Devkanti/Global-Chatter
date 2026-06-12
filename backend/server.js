@@ -108,7 +108,10 @@ const syncUserData = async () => {
   users.forEach(u => {
     if (u.avatar) profiles[u.username] = u.avatar;
     if (u.publicKey) keys[u.username] = u.publicKey;
-    privacy[u.username] = u.privacyMode || false;
+    let pMode = u.privacyMode;
+    if (pMode === 'true' || pMode === true) pMode = 'friends';
+    if (pMode === 'false' || pMode === false || !pMode) pMode = 'everyone';
+    privacy[u.username] = pMode;
   });
 
   io.emit('profiles:sync', profiles);
@@ -245,10 +248,11 @@ io.on('connection', async (socket) => {
     io.emit('profile:updated', { username: socket.username, avatarUrl: base64Image });
   });
 
-  socket.on('user:toggle_privacy', async () => {
+  socket.on('user:set_privacy', async (mode) => {
+    if (!['everyone', 'friends', 'nobody'].includes(mode)) return;
     const user = await User.findById(socket.userId);
     if (user) {
-      user.privacyMode = !user.privacyMode;
+      user.privacyMode = mode;
       await user.save();
       await syncUserData();
     }

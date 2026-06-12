@@ -3,6 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 require('dotenv').config();
 const connectDB = require('./db');
@@ -13,7 +14,17 @@ const Message = require('./models/Message');
 const Room = require('./models/Room');
 
 const app = express();
-app.use(cors());
+app.use(helmet());
+const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:5173'];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 app.use(express.json());
 app.use(mongoSanitize());
 
@@ -57,7 +68,7 @@ const socketUsers = new Map(); // socket.id -> { userId, username, roomId }
 const roomUsers = new Map(); // roomId -> Set of usernames
 const globalUsers = new Set(); // All unique usernames connected
 const userStatuses = new Map(); // username -> 'online' | 'dnd' | 'invisible'
-// Removed in-memory userStats since we use MongoDB now
+const socketRateLimits = new Map(); // socket.id -> array of message timestamps
 
 const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
@@ -421,6 +432,18 @@ io.on('connection', async (socket) => {
   });
 
   socket.on('message:send', async (messageData) => {
+    // Chat Spam Protection: Max 5 messages per 2 seconds
+    if (!socketRateLimits.has(socket.id)) socketRateLimits.set(socket.id, []);
+    const timestamps = socketRateLimits.get(socket.id);
+    const now = Date.now();
+    const recentTimestamps = timestamps.filter(t => now - t < 2000);
+    if (recentTimestamps.length >= 5) {
+      socket.emit('system:warning', 'You are sending messages too quickly. Please slow down.');
+      return;
+    }
+    recentTimestamps.push(now);
+    socketRateLimits.set(socket.id, recentTimestamps);
+
     const roomId = socket.roomId || 'global';
     
     try {
@@ -556,6 +579,7 @@ io.on('connection', async (socket) => {
     console.log('Client disconnected:', socket.id);
     
     const userData = socketUsers.get(socket.id);
+    socketRateLimits.delete(socket.id);
     if (userData) {
       const { username, roomId } = userData;
       socketUsers.delete(socket.id);

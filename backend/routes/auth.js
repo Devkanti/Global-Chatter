@@ -4,6 +4,17 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const OTP = require('../models/OTP');
+const rateLimit = require('express-rate-limit');
+const speakeasy = require('speakeasy');
+const QRCode = require('qrcode');
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 auth requests per windowMs
+  message: { error: 'Too many requests from this IP, please try again after 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Google Apps Script Web App URL (to bypass Render's SMTP block)
 const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
@@ -13,7 +24,7 @@ const SCRIPT_SECRET = process.env.SCRIPT_SECRET;
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 // POST /auth/signup
-router.post('/signup', async (req, res) => {
+router.post('/signup', authLimiter, async (req, res) => {
   try {
     let { email, password, username } = req.body;
     
@@ -88,7 +99,7 @@ router.post('/signup', async (req, res) => {
 });
 
 // POST /auth/verify-otp
-router.post('/verify-otp', async (req, res) => {
+router.post('/verify-otp', authLimiter, async (req, res) => {
   try {
     let { email, otp } = req.body;
     
@@ -131,7 +142,7 @@ router.post('/verify-otp', async (req, res) => {
 });
 
 // POST /auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
   try {
     let { email, password } = req.body;
     
@@ -155,6 +166,11 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
 
+    if (user.isTwoFactorEnabled) {
+      const tempToken = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '5m' });
+      return res.status(200).json({ require2FA: true, tempToken, message: '2FA required' });
+    }
+
     const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
     res.status(200).json({ 
@@ -164,6 +180,140 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Login Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST /auth/login/2fa
+router.post('/login/2fa', authLimiter, async (req, res) => {
+  try {
+    const { tempToken, totpCode } = req.body;
+    if (!tempToken || !totpCode) {
+      return res.status(400).json({ error: 'Missing token or code' });
+    }
+
+    const decoded = jwt.verify(tempToken, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    if (!user || !user.isTwoFactorEnabled || !user.twoFactorSecret) {
+      return res.status(400).json({ error: 'Invalid request' });
+    }
+
+    const verified = speakeasy.totp.verify({
+      secret: user.twoFactorSecret,
+      encoding: 'base32',
+      token: totpCode,
+      window: 1
+    });
+
+    if (!verified) {
+      return res.status(400).json({ error: 'Invalid 2FA code' });
+    }
+
+    const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '30d' });
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      user: { id: user._id, username: user.username, email: user.email, isAdmin: user.isAdmin }
+    });
+  } catch (error) {
+    console.error('2FA Login Error:', error);
+    res.status(400).json({ error: 'Invalid or expired session' });
+  }
+});
+
+// Middleware for auth verification for 2FA setup
+const requireAuth = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = decoded.id;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+// POST /auth/2fa/generate
+router.post('/2fa/generate', requireAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    
+    if (user.isTwoFactorEnabled) {
+      return res.status(400).json({ error: '2FA is already enabled' });
+    }
+
+    const secret = speakeasy.generateSecret({ name: `GlobalChatter (${user.email})` });
+    user.twoFactorSecret = secret.base32;
+    await user.save();
+
+    const qrCodeUrl = await QRCode.toDataURL(secret.otpauth_url);
+    res.status(200).json({ qrCodeUrl });
+  } catch (error) {
+    console.error('Generate 2FA Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST /auth/2fa/verify-enable
+router.post('/2fa/verify-enable', requireAuth, async (req, res) => {
+  try {
+    const { totpCode } = req.body;
+    const user = await User.findById(req.userId);
+    
+    if (!user.twoFactorSecret) {
+      return res.status(400).json({ error: '2FA secret not generated' });
+    }
+
+    const verified = speakeasy.totp.verify({
+      secret: user.twoFactorSecret,
+      encoding: 'base32',
+      token: totpCode,
+      window: 1
+    });
+
+    if (!verified) {
+      return res.status(400).json({ error: 'Invalid code' });
+    }
+
+    user.isTwoFactorEnabled = true;
+    await user.save();
+    res.status(200).json({ message: '2FA enabled successfully' });
+  } catch (error) {
+    console.error('Enable 2FA Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST /auth/2fa/disable
+router.post('/2fa/disable', requireAuth, async (req, res) => {
+  try {
+    const { totpCode } = req.body;
+    const user = await User.findById(req.userId);
+
+    if (!user.isTwoFactorEnabled) {
+      return res.status(400).json({ error: '2FA is not enabled' });
+    }
+
+    const verified = speakeasy.totp.verify({
+      secret: user.twoFactorSecret,
+      encoding: 'base32',
+      token: totpCode,
+      window: 1
+    });
+
+    if (!verified) {
+      return res.status(400).json({ error: 'Invalid code' });
+    }
+
+    user.isTwoFactorEnabled = false;
+    user.twoFactorSecret = null;
+    await user.save();
+    res.status(200).json({ message: '2FA disabled successfully' });
+  } catch (error) {
+    console.error('Disable 2FA Error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

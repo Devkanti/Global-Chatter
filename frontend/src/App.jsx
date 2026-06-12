@@ -52,6 +52,8 @@ function App() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [otpMode, setOtpMode] = useState(false);
   const [otpCode, setOtpCode] = useState('');
+  const [is2FAMode, setIs2FAMode] = useState(false);
+  const [tempToken, setTempToken] = useState('');
   const [authError, setAuthError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -220,6 +222,9 @@ function App() {
 
       if (isSignUp) {
         setOtpMode(true);
+      } else if (data.require2FA) {
+        setIs2FAMode(true);
+        setTempToken(data.tempToken);
       } else {
         await finishLoginSetup(data.user.username, data.token, data.user.isAdmin);
       }
@@ -245,6 +250,31 @@ function App() {
 
       if (!res.ok) {
         throw new Error(data.error || 'Verification failed');
+      }
+
+      await finishLoginSetup(data.user.username, data.token, data.user.isAdmin);
+    } catch (err) {
+      setAuthError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handle2FASubmit = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setIsLoading(true);
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/auth/login/2fa`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tempToken, totpCode: otpCode })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || '2FA Verification failed');
       }
 
       await finishLoginSetup(data.user.username, data.token, data.user.isAdmin);
@@ -437,19 +467,11 @@ function App() {
             marginBottom: '0.5rem',
             letterSpacing: '-0.5px'
           }}>
-            {otpMode ? 'Verify Email' : (isSignUp ? 'Create Account' : 'Welcome Back')}
+            {is2FAMode ? 'Two-Factor Auth' : otpMode ? 'Verify Email' : (isSignUp ? 'Create Account' : 'Welcome Back')}
           </h1>
           <p className="subtitle" style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem', textAlign: 'center' }}>
-            {otpMode ? `Enter the 6-digit code sent to ${email}` : (isSignUp ? 'Sign up to get started' : 'Log in to continue chatting')}
+            {is2FAMode ? 'Enter the 6-digit code from your authenticator app' : otpMode ? `Enter the 6-digit code sent to ${email}` : (isSignUp ? 'Sign up to get started' : 'Log in to continue chatting')}
           </p>
-
-          <div style={{ background: 'var(--card-bg)', border: '1px solid var(--panel-border)', borderRadius: '12px', padding: '1rem', marginBottom: '2rem', display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-            <ShieldAlert size={20} color="#10b981" style={{ flexShrink: 0, marginTop: '2px' }} />
-            <div>
-              <h4 style={{ margin: '0 0 0.25rem 0', color: 'var(--text-main)', fontSize: '0.9rem' }}>🛡️ Secured & Privacy-Focused Chat</h4>
-              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8rem', lineHeight: '1.4' }}>We protect your conversations using industry-standard TLS/SSL encryption. Your data is strictly yours. We never sell your chat history or personal data to third parties.</p>
-            </div>
-          </div>
 
           {authError && (
             <div style={{ width: '100%', padding: '0.8rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', color: '#ef4444', fontSize: '0.85rem', marginBottom: '1.5rem', textAlign: 'center' }}>
@@ -457,7 +479,32 @@ function App() {
             </div>
           )}
 
-          {otpMode ? (
+          {is2FAMode ? (
+            <form onSubmit={handle2FASubmit} className="login-form" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem' }}>Authenticator Code</label>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <KeyRound size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '1.25rem', opacity: 0.7 }} />
+                  <input
+                    type="text"
+                    name="totpCode"
+                    autoComplete="one-time-code"
+                    inputMode="numeric"
+                    placeholder="000000"
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    style={{ background: 'var(--input-bg)', border: '1px solid var(--panel-border)', color: 'var(--text-main)', borderRadius: '12px', padding: '0.85rem 1rem 0.85rem 3rem', outline: 'none', transition: 'all 0.2s', letterSpacing: '4px', textAlign: 'center', fontSize: '1.2rem', fontWeight: '700', width: '100%' }}
+                    onFocus={e => { e.currentTarget.style.border = '1px solid var(--primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--primary-glow)'; }}
+                    onBlur={e => { e.currentTarget.style.border = '1px solid var(--panel-border)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    autoFocus
+                  />
+                </div>
+              </div>
+              <button type="submit" className="btn-primary" disabled={otpCode.length !== 6 || isLoading} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.85rem', borderRadius: '12px', fontWeight: '600', marginTop: '1rem', opacity: (otpCode.length !== 6 || isLoading) ? 0.7 : 1 }}>
+                {isLoading ? 'Verifying...' : 'Verify Login'}
+              </button>
+            </form>
+          ) : otpMode ? (
             <form onSubmit={handleVerifyOTP} className="login-form" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
                 <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginLeft: '0.2rem' }}>OTP Code</label>
@@ -566,18 +613,6 @@ function App() {
             </p>
           )}
         </div>
-
-        <div style={{ position: 'absolute', bottom: '1.5rem', width: '100%', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem', zIndex: 10 }}>
-          © 2026 Global Chatter. All rights reserved.<br />
-          <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy Policy</a> | 
-            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Terms of Service</a> | 
-            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Community Guidelines</a> | 
-            <button onClick={() => setIsSecurityModalOpen(true)} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', padding: 0, fontSize: '0.8rem' }}>Report a Vulnerability</button>
-          </div>
-        </div>
-
-        <SecurityModal isOpen={isSecurityModalOpen} onClose={() => setIsSecurityModalOpen(false)} />
       </div>
     );
   }

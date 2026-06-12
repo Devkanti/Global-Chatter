@@ -10,6 +10,52 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
   const [newNameInput, setNewNameInput] = useState(currentUser);
   const fileInputRef = useRef(null);
 
+  const [is2FASetupVisible, setIs2FASetupVisible] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const [totpCode, setTotpCode] = useState('');
+
+  const handleGenerate2FA = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'}/auth/2fa/generate`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setQrCodeUrl(data.qrCodeUrl);
+        setIs2FASetupVisible(true);
+      } else {
+        window.dispatchEvent(new CustomEvent('app:toast', { detail: data.error || 'Failed to generate 2FA' }));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleVerify2FA = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'}/auth/2fa/verify-enable`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ totpCode })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        window.dispatchEvent(new CustomEvent('app:toast', { detail: '2FA Enabled Successfully!' }));
+        setIs2FASetupVisible(false);
+        setQrCodeUrl('');
+        setTotpCode('');
+      } else {
+        window.dispatchEvent(new CustomEvent('app:toast', { detail: data.error || 'Invalid Code' }));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   if (!isOpen) return null;
 
   const currentStatus = userStatuses?.[currentUser] || 'online';
@@ -223,9 +269,21 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
               <div style={{ marginBottom: '1.5rem' }}>
                 <strong style={{ display: 'block', color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '0.25rem' }}>Two-Factor Authentication (2FA)</strong>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: '0 0 0.75rem 0' }}>Protect your account with an authenticator app code.</p>
-                <button style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }} onClick={() => window.dispatchEvent(new CustomEvent('app:toast', { detail: '2FA Setup coming soon!' }))}>
-                  Enable 2FA
-                </button>
+                {!is2FASetupVisible ? (
+                  <button style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }} onClick={handleGenerate2FA}>
+                    Setup 2FA
+                  </button>
+                ) : (
+                  <div style={{ background: 'var(--panel-bg)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--panel-border)' }}>
+                    <p style={{ color: 'var(--text-main)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>1. Scan this QR code with Google Authenticator or Authy</p>
+                    {qrCodeUrl && <img src={qrCodeUrl} alt="2FA QR Code" style={{ background: 'white', padding: '0.5rem', borderRadius: '8px', marginBottom: '1rem', width: '150px', height: '150px' }} />}
+                    <p style={{ color: 'var(--text-main)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>2. Enter the 6-digit code to verify</p>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <input type="text" placeholder="000000" value={totpCode} onChange={e => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))} style={{ flex: 1, background: 'var(--input-bg)', border: '1px solid var(--panel-border)', color: 'var(--text-main)', borderRadius: '8px', padding: '0.5rem 1rem', outline: 'none', letterSpacing: '4px', textAlign: 'center', fontWeight: 'bold' }} />
+                      <button onClick={handleVerify2FA} disabled={totpCode.length !== 6} style={{ background: '#10b981', color: 'white', border: 'none', padding: '0 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', opacity: totpCode.length === 6 ? 1 : 0.5 }}>Verify</button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div style={{ marginBottom: '1.5rem', borderTop: '1px solid var(--panel-border)', paddingTop: '1.5rem' }}>

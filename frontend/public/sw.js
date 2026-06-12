@@ -23,7 +23,7 @@ self.addEventListener('push', function(event) {
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then(windowClients => {
+    self.clients.matchAll({ type: 'window' }).then(windowClients => {
       // Check if there is already a window/tab open with the target URL
       for (let i = 0; i < windowClients.length; i++) {
         const client = windowClients[i];
@@ -32,8 +32,8 @@ self.addEventListener('notificationclick', function(event) {
         }
       }
       // If not, open a new window
-      if (clients.openWindow) {
-        return clients.openWindow(event.notification.data.url);
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(event.notification.data.url);
       }
     })
   );

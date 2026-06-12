@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Phone, PhoneOff, PhoneCall, Mic, MicOff, Video, VideoOff, Monitor, MonitorOff, PictureInPicture, Maximize, Minimize, SwitchCamera } from 'lucide-react';
+import { Phone, PhoneOff, Mic, MicOff, Video, VideoOff, Monitor, MonitorOff, PictureInPicture, Maximize, Minimize, SwitchCamera } from 'lucide-react';
 
 export default function CallOverlay({ 
   callState, 

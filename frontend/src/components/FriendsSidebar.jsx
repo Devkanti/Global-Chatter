@@ -2,7 +2,7 @@ import { User, Check, X, UserPlus } from 'lucide-react';
 import { getAvatarGradient } from '../utils';
 import { socket } from '../socket';
 
-export default function FriendsSidebar({ currentUser, userProfiles, userStatuses, userFriends, friendRequests, onSelectUser, onClose }) {
+export default function FriendsSidebar({ currentUser, userProfiles, userStatuses, userFriends, friendRequests, onSelectUser }) {
   const displayUsers = userFriends || [];
 
   return (

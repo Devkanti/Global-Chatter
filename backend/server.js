@@ -3,6 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const mongoSanitize = require('express-mongo-sanitize');
 require('dotenv').config();
 const connectDB = require('./db');
 const webpush = require('web-push');
@@ -14,6 +15,7 @@ const Room = require('./models/Room');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(mongoSanitize());
 
 connectDB();
 
@@ -22,6 +24,9 @@ app.use('/auth', authRoutes);
 
 const pushRoutes = require('./routes/push');
 app.use('/push', pushRoutes);
+
+const adminRoutes = require('./routes/admin');
+app.use('/admin', adminRoutes);
 
 // Health check endpoint for UptimeRobot
 app.get('/ping', (req, res) => {

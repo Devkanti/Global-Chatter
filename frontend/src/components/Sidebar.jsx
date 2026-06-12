@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Settings, LogOut, MessageSquare, Globe, Hash, Users, Bookmark, Edit2, X, Plus, Trash2 } from 'lucide-react';
+import { Settings, LogOut, Globe, Hash, Users, Bookmark, Edit2, X, Plus, Trash2 } from 'lucide-react';
 
-export default function Sidebar({ currentUser, activeRooms, savedRooms = [], currentRoom, customRoomNames, onNewChat, onSelectRoom, onOpenSettings, onLogout, onToggleFriends, showFriends, friendRequestsCount, onRenameRoom, onDeleteRoom, isMobileOpen, onCloseMobile }) {
+export default function Sidebar({ currentUser, activeRooms, savedRooms = [], currentRoom, customRoomNames, onNewChat, onSelectRoom, onOpenSettings, onLogout, onToggleFriends, showFriends, friendRequestsCount, onRenameRoom, onDeleteRoom, isMobileOpen, onCloseMobile, isAdmin, onOpenAdmin }) {
   const displayRooms = Array.from(new Set([...savedRooms, ...activeRooms]));
   const [editingRoomId, setEditingRoomId] = useState(null);
   const [editingValue, setEditingValue] = useState('');
@@ -31,8 +31,7 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'all 0.2s',
-              border: '1px solid var(--hover-bg)'
+              transition: 'all 0.2s'
             }}
             title="New Chat"
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--hover-bg-strong)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)' }}
@@ -267,6 +266,36 @@ export default function Sidebar({ currentUser, activeRooms, savedRooms = [], cur
           </div>
           <span style={{ fontWeight: '500' }}>Settings</span>
         </button>
+
+        {isAdmin && (
+          <button 
+            onClick={onOpenAdmin}
+            style={{ 
+              width: '100%', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.75rem', 
+              padding: '0.5rem', 
+              background: 'transparent',
+              color: 'var(--text-muted)',
+              borderRadius: '12px',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--icon-bg)';
+              e.currentTarget.style.color = 'var(--text-main)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--text-muted)';
+            }}
+          >
+            <div style={{ width: '32px', height: '32px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--hover-bg)', color: 'inherit', transition: 'all 0.2s' }}>
+              <Users size={18} />
+            </div>
+            <span style={{ fontWeight: '500' }}>Admin Panel</span>
+          </button>
+        )}
 
         <button 
           onClick={onLogout}

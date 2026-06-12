@@ -8,7 +8,7 @@ const ICE_SERVERS = {
   ]
 };
 
-export function useWebRTC(currentUser) {
+export function useWebRTC() {
   const [callState, setCallState] = useState('idle'); // idle, ringing, incoming, connected
   const [callType, setCallType] = useState('video'); // video, audio
   const [callerName, setCallerName] = useState('');

@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { socket } from '../socket';
-import { Send, Check, CheckCheck, Copy, CheckCircle2, LogOut, Users, PanelRightOpen, PanelRightClose, Bookmark, BookmarkCheck, Edit2, Menu, Globe, Hash, Video, Phone, Mic, Square, Play, Pause, Search, X, Trash2 } from 'lucide-react';
+import { Send, Check, CheckCheck, Copy, CheckCircle2, LogOut, Users, Bookmark, BookmarkCheck, Menu, Globe, Hash, Video, Phone, Mic, Search, X, Trash2 } from 'lucide-react';
 import AudioVisualizer from './AudioVisualizer';
 import CustomAudioPlayer from './CustomAudioPlayer';
 import { getAvatarGradient, censorText } from '../utils';
 import { encryptMessage, decryptMessage } from '../crypto';
 
-export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, userStatuses, userFriends, userPrivacyMode, userPublicKeys, myPrivateKey, onSelectUser, onToggleFriends, showFriends, onSaveRoom, isSaved, customRoomName, onRenameRoom, onToggleMobileSidebar, onInitiateCall }) {
+export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, userStatuses, userFriends, userPrivacyMode, userPublicKeys, myPrivateKey, onSelectUser, onSaveRoom, isSaved, onRenameRoom, onToggleMobileSidebar, onInitiateCall }) {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [typingUsers, setTypingUsers] = useState(new Set());
@@ -20,10 +20,10 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
-  const [hoveredMessage, setHoveredMessage] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recordedAudioBase64, setRecordedAudioBase64] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [recordingStream, setRecordingStream] = useState(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const recordingTimerRef = useRef(null);
@@ -180,7 +180,6 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
     socket.on('system:warning', handleSystemWarning);
     socket.on('room:history', handleRoomHistory);
 
-    setMessages([]);
     socket.emit('room:request_history', roomId);
     // Emit read when opening room
     socket.emit('messages:read', { roomId });
@@ -323,7 +322,17 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       setRecordingStream(stream);
-      mediaRecorderRef.current = new MediaRecorder(stream);
+
+      let options = {};
+      if (MediaRecorder.isTypeSupported('audio/webm')) {
+        options = { mimeType: 'audio/webm' };
+      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        options = { mimeType: 'audio/mp4' };
+      } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+        options = { mimeType: 'audio/ogg' };
+      }
+      
+      mediaRecorderRef.current = new MediaRecorder(stream, options);
       audioChunksRef.current = [];
       mediaRecorderRef.current.ondataavailable = (e) => {
         if (e.data.size > 0) audioChunksRef.current.push(e.data);
@@ -343,8 +352,8 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
         setRecordingTime(prev => prev + 1);
       }, 1000);
     } catch (e) {
-      console.error(e);
-      window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Microphone access denied or unavailable.' }));
+      console.error('Audio recording error:', e);
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Microphone access denied or unavailable on this device.' }));
     }
   };
 
@@ -407,14 +416,6 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
     const users = roomId.replace('PRIVATE-', '').split('-');
     defaultRoomName = users[0] === currentUser ? users[1] : users[0];
   }
-
-  const roomDisplayName = customRoomName || defaultRoomName;
-
-  const handleEditNameStart = () => {
-    if (isGlobal) return;
-    setIsEditingName(true);
-    setEditNameValue(customRoomName || defaultRoomName);
-  };
 
   const handleEditNameSave = () => {
     setIsEditingName(false);
@@ -656,6 +657,9 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
       </div>
 
       <div className="chat-messages">
+        <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '0.75rem', borderRadius: '12px', marginBottom: '1rem', color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+          🔒 Security Notice: Messages in this chat are encrypted in transit. To protect your privacy, never share your password, credit card details, or sensitive personal information with anyone in the chat.
+        </div>
         {messages.filter(msg => {
           if (!searchQuery) return true;
           if (msg.type === 'system') return false;
@@ -698,8 +702,6 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
             <div 
               key={msg.id} 
               className={`chat-message-row ${isMine ? 'mine' : 'other'} animate-fade-in`}
-              onMouseEnter={() => setHoveredMessage(msg.id)}
-              onMouseLeave={() => setHoveredMessage(null)}
             >
               {!isSystem && (
                 <div 
@@ -835,7 +837,7 @@ export default function ChatArea({ currentUser, roomId, onLeave, userProfiles, u
           ) : (
             <textarea
               ref={textareaRef}
-              placeholder="Start typing..."
+              placeholder="Type a secure message..."
               value={inputValue}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}

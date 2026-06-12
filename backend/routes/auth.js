@@ -15,7 +15,15 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 // POST /auth/signup
 router.post('/signup', async (req, res) => {
   try {
-    const { email, password, username } = req.body;
+    let { email, password, username } = req.body;
+    
+    if (typeof email !== 'string' || typeof password !== 'string' || typeof username !== 'string') {
+      return res.status(400).json({ error: 'Invalid input format' });
+    }
+
+    email = email.trim();
+    username = username.trim();
+
     if (!email || !password || !username) {
       return res.status(400).json({ error: 'All fields are required' });
     }
@@ -35,12 +43,15 @@ router.post('/signup', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    const isAdmin = email.toLowerCase() === 'work.devkantisarkar@gmail.com';
+    
     // Create unverified user
     const newUser = new User({
       email,
       username,
       password: hashedPassword,
-      isVerified: false
+      isVerified: false,
+      isAdmin
     });
     await newUser.save();
 
@@ -79,7 +90,14 @@ router.post('/signup', async (req, res) => {
 // POST /auth/verify-otp
 router.post('/verify-otp', async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    let { email, otp } = req.body;
+    
+    if (typeof email !== 'string' || typeof otp !== 'string') {
+      return res.status(400).json({ error: 'Invalid input format' });
+    }
+
+    email = email.trim();
+    otp = otp.trim();
     
     const otpRecord = await OTP.findOne({ email, otp });
     if (!otpRecord) {
@@ -104,7 +122,7 @@ router.post('/verify-otp', async (req, res) => {
     res.status(200).json({ 
       message: 'Account verified successfully', 
       token, 
-      user: { id: user._id, username: user.username, email: user.email }
+      user: { id: user._id, username: user.username, email: user.email, isAdmin: user.isAdmin }
     });
   } catch (error) {
     console.error('Verify OTP Error:', error);
@@ -115,7 +133,13 @@ router.post('/verify-otp', async (req, res) => {
 // POST /auth/login
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    
+    if (typeof email !== 'string' || typeof password !== 'string') {
+      return res.status(400).json({ error: 'Invalid input format' });
+    }
+
+    email = email.trim();
     
     const user = await User.findOne({ email });
     if (!user) {
@@ -136,7 +160,7 @@ router.post('/login', async (req, res) => {
     res.status(200).json({ 
       message: 'Login successful', 
       token, 
-      user: { id: user._id, username: user.username, email: user.email }
+      user: { id: user._id, username: user.username, email: user.email, isAdmin: user.isAdmin }
     });
   } catch (error) {
     console.error('Login Error:', error);

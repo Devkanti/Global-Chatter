@@ -1,18 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+
 import Sidebar from './components/Sidebar';
 import FriendsSidebar from './components/FriendsSidebar';
 import ChatArea from './components/ChatArea';
+import Toast from './components/Toast';
 import SettingsModal from './components/SettingsModal';
 import UserProfileModal from './components/UserProfileModal';
 import CallOverlay from './components/CallOverlay';
-import Toast from './components/Toast';
-import { MessageSquare, Globe, KeyRound, Plus, Settings, Sun, Moon, PanelRightClose, PanelRightOpen, ArrowRight, Sparkles, User, Mail, Lock, User as UserIcon, ChevronRight, Hash } from 'lucide-react';
+
+import { Globe, KeyRound, Plus, Sun, Moon, ArrowRight, Sparkles, Mail, Lock, User as UserIcon, ChevronRight, Hash, ShieldAlert } from 'lucide-react';
+import SecurityModal from './components/SecurityModal';
 import { initCrypto } from './crypto';
 import { socket, BACKEND_URL } from './socket';
 import { useWebRTC } from './useWebRTC';
 import { ErrorBoundary } from './ErrorBoundary';
 import InstallPrompt from './components/InstallPrompt';
+import AdminPanel from './components/AdminPanel';
 import './App.css';
 
 function App() {
@@ -36,9 +39,12 @@ function App() {
   const [userPublicKeys, setUserPublicKeys] = useState({});
   const [toastMessage, setToastMessage] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
+  const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
   const [showFriends, setShowFriends] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [selectedUserProfile, setSelectedUserProfile] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   
   // Auth States
   const [email, setEmail] = useState('');
@@ -52,7 +58,7 @@ function App() {
   const [myPrivateKey, setMyPrivateKey] = useState(null);
   const myPublicKeyJwkRef = useRef(null);
 
-  const webrtc = useWebRTC(username);
+  const webrtc = useWebRTC();
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -162,7 +168,8 @@ function App() {
     }
   };
 
-  const finishLoginSetup = async (usernameValue, token) => {
+  const finishLoginSetup = async (usernameValue, token, adminStatus = false) => {
+    setIsAdmin(adminStatus);
     localStorage.setItem('chat_token', token);
     
     // Setup crypto
@@ -214,7 +221,7 @@ function App() {
       if (isSignUp) {
         setOtpMode(true);
       } else {
-        await finishLoginSetup(data.user.username, data.token);
+        await finishLoginSetup(data.user.username, data.token, data.user.isAdmin);
       }
     } catch (err) {
       setAuthError(err.message);
@@ -240,7 +247,7 @@ function App() {
         throw new Error(data.error || 'Verification failed');
       }
 
-      await finishLoginSetup(data.user.username, data.token);
+      await finishLoginSetup(data.user.username, data.token, data.user.isAdmin);
       setOtpMode(false);
     } catch (err) {
       setAuthError(err.message);
@@ -432,9 +439,17 @@ function App() {
           }}>
             {otpMode ? 'Verify Email' : (isSignUp ? 'Create Account' : 'Welcome Back')}
           </h1>
-          <p className="subtitle" style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '2.5rem', textAlign: 'center' }}>
+          <p className="subtitle" style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem', textAlign: 'center' }}>
             {otpMode ? `Enter the 6-digit code sent to ${email}` : (isSignUp ? 'Sign up to get started' : 'Log in to continue chatting')}
           </p>
+
+          <div style={{ background: 'var(--card-bg)', border: '1px solid var(--panel-border)', borderRadius: '12px', padding: '1rem', marginBottom: '2rem', display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+            <ShieldAlert size={20} color="#10b981" style={{ flexShrink: 0, marginTop: '2px' }} />
+            <div>
+              <h4 style={{ margin: '0 0 0.25rem 0', color: 'var(--text-main)', fontSize: '0.9rem' }}>🛡️ Secured & Privacy-Focused Chat</h4>
+              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8rem', lineHeight: '1.4' }}>We protect your conversations using industry-standard TLS/SSL encryption. Your data is strictly yours. We never sell your chat history or personal data to third parties.</p>
+            </div>
+          </div>
 
           {authError && (
             <div style={{ width: '100%', padding: '0.8rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', color: '#ef4444', fontSize: '0.85rem', marginBottom: '1.5rem', textAlign: 'center' }}>
@@ -530,6 +545,12 @@ function App() {
                 </div>
               </div>
               
+              {isSignUp && (
+                <p style={{ margin: '0.5rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.8rem', textAlign: 'center', lineHeight: '1.4' }}>
+                  To keep our chat rooms safe and free from spam bots, all signups are protected by secure verification. Multi-factor authentication (MFA) is available inside your account settings.
+                </p>
+              )}
+              
               <button type="submit" className="btn-primary" disabled={isLoading || !email || !password || (isSignUp && !username)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.85rem', borderRadius: '12px', fontWeight: '600', marginTop: '1rem', opacity: isLoading ? 0.7 : 1 }}>
                 {isLoading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Log In')} <ArrowRight size={18} />
               </button>
@@ -545,6 +566,18 @@ function App() {
             </p>
           )}
         </div>
+
+        <div style={{ position: 'absolute', bottom: '1.5rem', width: '100%', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem', zIndex: 10 }}>
+          © 2026 Global Chatter. All rights reserved.<br />
+          <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy Policy</a> | 
+            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Terms of Service</a> | 
+            <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Community Guidelines</a> | 
+            <button onClick={() => setIsSecurityModalOpen(true)} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', padding: 0, fontSize: '0.8rem' }}>Report a Vulnerability</button>
+          </div>
+        </div>
+
+        <SecurityModal isOpen={isSecurityModalOpen} onClose={() => setIsSecurityModalOpen(false)} />
       </div>
     );
   }
@@ -580,6 +613,8 @@ function App() {
         friendRequestsCount={friendRequests.length}
         isMobileOpen={showMobileSidebar}
         onCloseMobile={() => setShowMobileSidebar(false)}
+        isAdmin={isAdmin}
+        onOpenAdmin={() => setIsAdminPanelOpen(true)}
       />
 
       {!roomId ? (
@@ -701,6 +736,7 @@ function App() {
       ) : (
         <ErrorBoundary>
           <ChatArea
+            key={roomId}
             currentUser={username}
             roomId={roomId}
             onLeave={() => leaveRoom(roomId)}
@@ -711,8 +747,6 @@ function App() {
             userPublicKeys={userPublicKeys}
             myPrivateKey={myPrivateKey}
             onSelectUser={setSelectedUserProfile}
-            onToggleFriends={() => setShowFriends(prev => !prev)}
-            showFriends={showFriends}
             onSaveRoom={handleSaveRoomToggle}
             isSaved={savedRooms.includes(roomId)}
             customRoomName={customRoomNames[roomId]}
@@ -795,6 +829,12 @@ function App() {
       />
       
       <InstallPrompt />
+      
+      <AdminPanel 
+        isOpen={isAdminPanelOpen} 
+        onClose={() => setIsAdminPanelOpen(false)} 
+      />
+      {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage(null)} />}
     </div>
   );
 }

@@ -4,8 +4,7 @@ import { getAvatarGradient } from '../utils';
 
 export default function UserProfileModal({ isOpen, onClose, targetUser, currentUser, userProfiles, userStatuses, userFriends, friendRequests, sentRequests = new Set(), onSendRequest, onCancelRequest, userPrivacyMode, onJoinRoom }) {
   if (!isOpen || !targetUser) return null;
-
-  const targetAvatar = userProfiles[targetUser];
+  if (!isOpen || !targetUser) return null;
   const targetStatus = userStatuses[targetUser] || 'online';
   const isFriend = userFriends.includes(targetUser);
   const isSelf = targetUser === currentUser;
@@ -15,11 +14,9 @@ export default function UserProfileModal({ isOpen, onClose, targetUser, currentU
   const displayAvatar = isPrivacyEnabled ? null : userProfiles[targetUser];
 
   let dotColor = '#10b981';
-  let dotBorder = '2px solid var(--bg-color)';
   if (targetStatus === 'dnd') dotColor = '#f59e0b';
   if (targetStatus === 'invisible') {
     dotColor = 'transparent';
-    dotBorder = '2px solid var(--text-muted)';
   }
 
   const hasIncomingRequest = friendRequests && friendRequests.includes(targetUser);

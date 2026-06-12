@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { socket } from '../socket';
-import { X, ShieldAlert, Camera, EyeOff, Clock } from 'lucide-react';
+import { X, ShieldAlert, Camera, Clock } from 'lucide-react';
 import { getAvatarGradient } from '../utils';
 
 export default function SettingsModal({ isOpen, onClose, currentUser, userProfiles, userStats, userStatuses, userPrivacyMode }) {
@@ -216,25 +216,42 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
               </div>
             </div>
 
-            {/* Privacy Card */}
+            {/* Security & 2FA Card */}
             <div style={{ background: 'var(--card-bg)', border: '1px solid var(--hover-bg)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem' }}>PRIVACY & SAFETY</p>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <div style={{ background: 'var(--sidebar-bottom)', padding: '0.5rem', borderRadius: '8px' }}>
-                    <EyeOff size={18} color={userPrivacyMode?.[currentUser] ? '#10b981' : 'var(--text-muted)'} />
-                  </div>
-                  <div>
-                    <strong style={{ display: 'block', color: 'var(--text-main)', fontSize: '0.95rem' }}>Privacy Mode</strong>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Block strangers and friend requests</span>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => socket.emit('user:toggle_privacy')}
-                  style={{ width: '44px', height: '24px', borderRadius: '12px', background: userPrivacyMode?.[currentUser] ? '#10b981' : 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', position: 'relative', cursor: 'pointer', transition: 'background 0.3s' }}
-                >
-                  <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'var(--text-main)', position: 'absolute', top: '1px', left: userPrivacyMode?.[currentUser] ? '21px' : '1px', transition: 'left 0.3s', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}></div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '1rem' }}>⚙️ PRIVACY & SECURITY SETTINGS</p>
+              
+              <div style={{ marginBottom: '1.5rem' }}>
+                <strong style={{ display: 'block', color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '0.25rem' }}>Two-Factor Authentication (2FA)</strong>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: '0 0 0.75rem 0' }}>Protect your account with an authenticator app code.</p>
+                <button style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }} onClick={() => window.dispatchEvent(new CustomEvent('app:toast', { detail: '2FA Setup coming soon!' }))}>
+                  Enable 2FA
                 </button>
+              </div>
+
+              <div style={{ marginBottom: '1.5rem', borderTop: '1px solid var(--panel-border)', paddingTop: '1.5rem' }}>
+                <strong style={{ display: 'block', color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '0.25rem' }}>Message Privacy</strong>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: '0 0 0.75rem 0' }}>Who can send you direct messages?</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-main)', fontSize: '0.85rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                    <input type="radio" name="dm_privacy" checked={!userPrivacyMode?.[currentUser]} onChange={() => userPrivacyMode?.[currentUser] && socket.emit('user:toggle_privacy')} /> Everyone
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                    <input type="radio" name="dm_privacy" checked={!!userPrivacyMode?.[currentUser]} onChange={() => !userPrivacyMode?.[currentUser] && socket.emit('user:toggle_privacy')} /> Friends Only
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', opacity: 0.5 }} title="Coming soon">
+                    <input type="radio" name="dm_privacy" disabled /> Nobody
+                  </label>
+                </div>
+              </div>
+
+              <div style={{ borderTop: '1px solid var(--panel-border)', paddingTop: '1.5rem' }}>
+                <strong style={{ display: 'block', color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '0.25rem' }}>Safety & Moderation</strong>
+                <button style={{ background: 'transparent', color: 'var(--primary)', border: '1px solid var(--primary)', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.75rem' }} onClick={() => window.dispatchEvent(new CustomEvent('app:toast', { detail: 'Blocked users list is empty.' }))}>
+                  View Blocked Users List
+                </button>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: '1.4' }}>
+                  Need to report a user for harassment or scams? Click the 🚩 flag icon next to their name inside the chat window.
+                </p>
               </div>
             </div>
 

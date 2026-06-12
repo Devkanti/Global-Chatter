@@ -153,15 +153,15 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content animate-fade-in" style={{ background: 'var(--bg-color)', borderRadius: '24px', border: '1px solid var(--panel-border)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px var(--card-bg)', width: '100%', maxWidth: '900px', maxHeight: '90vh', overflowY: 'auto', padding: '2.5rem', position: 'relative' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--hover-bg)' }}>
+      <div className="modal-content animate-fade-in" style={{ background: 'var(--bg-color)', borderRadius: '24px', border: '1px solid var(--panel-border)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px var(--card-bg)', width: '100%', maxWidth: '1100px', maxHeight: '95vh', overflowY: 'hidden', padding: '2.5rem', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '1px solid var(--hover-bg)', flexShrink: 0 }}>
           <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-main)' }}>Settings</h2>
           <button onClick={onClose} style={{ background: 'var(--hover-bg)', color: 'var(--text-muted)', border: 'none', cursor: 'pointer', display: 'flex', padding: '0.5rem', borderRadius: '50%', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = 'var(--hover-bg-strong)'; e.currentTarget.style.color = 'var(--text-main)'; }} onMouseLeave={e => { e.currentTarget.style.background = 'var(--hover-bg)'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
             <X size={20} strokeWidth={2.5} />
           </button>
         </div>
         
-        <div style={{ display: 'flex', gap: '2.5rem', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: '2.5rem', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', flex: 1, minHeight: 0 }}>
           
           {/* Left Column - Profile Summary */}
           <div style={{ width: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
@@ -226,8 +226,8 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
             />
           </div>
 
-          {/* Right Column - Settings Cards */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', paddingRight: '0.5rem', minWidth: 'min(100%, 300px)' }}>
+          {/* Right Column - Grid Layout */}
+          <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem', alignContent: 'start', minWidth: 'min(100%, 300px)' }}>
             
             {/* Display Name Card */}
             <div style={{ background: 'var(--card-bg)', border: '1px solid var(--hover-bg)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
@@ -262,7 +262,7 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: currentStatus === 'online' ? '0 0 8px rgba(16,185,129,0.5)' : 'none', flexShrink: 0 }}></div> Online
                 </button>
                 <button onClick={() => handleStatusChange('dnd')} style={{ flex: '1 1 auto', whiteSpace: 'nowrap', padding: '0.6rem 0.75rem', borderRadius: '8px', background: currentStatus === 'dnd' ? 'rgba(245, 158, 11, 0.15)' : 'var(--sidebar-bottom)', border: `1px solid ${currentStatus === 'dnd' ? '#f59e0b' : 'transparent'}`, color: currentStatus === 'dnd' ? 'var(--text-main)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f59e0b', boxShadow: currentStatus === 'dnd' ? '0 0 8px rgba(245,158,11,0.5)' : 'none', flexShrink: 0 }}></div> Do Not Disturb
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f59e0b', boxShadow: currentStatus === 'dnd' ? '0 0 8px rgba(245,158,11,0.5)' : 'none', flexShrink: 0 }}></div> DND
                 </button>
                 <button onClick={() => handleStatusChange('invisible')} style={{ flex: '1 1 auto', whiteSpace: 'nowrap', padding: '0.6rem 0.75rem', borderRadius: '8px', background: currentStatus === 'invisible' ? 'rgba(155, 164, 181, 0.15)' : 'var(--sidebar-bottom)', border: `1px solid ${currentStatus === 'invisible' ? '#9ba4b5' : 'transparent'}`, color: currentStatus === 'invisible' ? 'var(--text-main)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', border: '2px solid var(--text-muted)', flexShrink: 0 }}></div> Invisible
@@ -270,88 +270,86 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
               </div>
             </div>
 
-            {/* Security & 2FA Card */}
+            {/* 2FA Card */}
             <div style={{ background: 'var(--card-bg)', border: '1px solid var(--hover-bg)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '1rem' }}>⚙️ PRIVACY & SECURITY SETTINGS</p>
-              
-              <div style={{ marginBottom: '1.5rem' }}>
-                <strong style={{ display: 'block', color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '0.25rem' }}>Two-Factor Authentication (2FA)</strong>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: '0 0 0.75rem 0' }}>Protect your account with an authenticator app code.</p>
-                {!is2FASetupVisible ? (
-                  <button style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }} onClick={handleGenerate2FA}>
-                    Setup 2FA
-                  </button>
-                ) : (
-                  <div style={{ background: 'var(--panel-bg)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--panel-border)' }}>
-                    <p style={{ color: 'var(--text-main)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>1. Scan this QR code with Google Authenticator or Authy</p>
-                    {qrCodeUrl && <img src={qrCodeUrl} alt="2FA QR Code" style={{ background: 'white', padding: '0.5rem', borderRadius: '8px', marginBottom: '1rem', width: '150px', height: '150px' }} />}
-                    <p style={{ color: 'var(--text-main)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>2. Enter the 6-digit code to verify</p>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <input type="text" placeholder="000000" value={totpCode} onChange={e => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))} style={{ flex: 1, background: 'var(--input-bg)', border: '1px solid var(--panel-border)', color: 'var(--text-main)', borderRadius: '8px', padding: '0.5rem 1rem', outline: 'none', letterSpacing: '4px', textAlign: 'center', fontWeight: 'bold' }} />
-                      <button onClick={handleVerify2FA} disabled={totpCode.length !== 6} style={{ background: '#10b981', color: 'white', border: 'none', padding: '0 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', opacity: totpCode.length === 6 ? 1 : 0.5 }}>Verify</button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div style={{ marginBottom: '1.5rem', borderTop: '1px solid var(--panel-border)', paddingTop: '1.5rem' }}>
-                <strong style={{ display: 'block', color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '0.25rem' }}>Message Privacy</strong>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: '0 0 1rem 0' }}>Who can send you direct messages?</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  {['everyone', 'friends', 'nobody'].map(mode => {
-                    const currentPrivacy = userPrivacyMode?.[currentUser] || 'everyone';
-                    const isSelected = currentPrivacy === mode;
-                    return (
-                      <div key={mode} onClick={() => socket.emit('user:set_privacy', mode)} style={{
-                        display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', cursor: 'pointer',
-                        background: isSelected ? 'var(--primary-glow)' : 'var(--input-bg)',
-                        border: `1px solid ${isSelected ? 'var(--primary)' : 'var(--panel-border)'}`,
-                        borderRadius: '12px', transition: 'all 0.2s'
-                      }} onMouseEnter={e => !isSelected && (e.currentTarget.style.borderColor = 'var(--text-muted)')} onMouseLeave={e => !isSelected && (e.currentTarget.style.borderColor = 'var(--panel-border)')}>
-                        <div style={{
-                          width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
-                          border: `2px solid ${isSelected ? 'var(--primary)' : 'var(--text-muted)'}`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s'
-                        }}>
-                          {isSelected && <div style={{ width: '10px', height: '10px', background: 'var(--primary)', borderRadius: '50%' }} />}
-                        </div>
-                        <div>
-                          <strong style={{ display: 'block', fontSize: '0.95rem', color: isSelected ? 'var(--text-main)' : 'var(--text-muted)', textTransform: 'capitalize' }}>
-                            {mode === 'friends' ? 'Friends Only' : mode}
-                          </strong>
-                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                            {mode === 'everyone' ? 'Anyone can send you direct messages.' : mode === 'friends' ? 'Only your friends can message you.' : 'No one can send you direct messages.'}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div style={{ borderTop: '1px solid var(--panel-border)', paddingTop: '1.5rem' }}>
-                <strong style={{ display: 'block', color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '0.25rem' }}>Safety & Moderation</strong>
-                <button style={{ background: 'transparent', color: 'var(--primary)', border: '1px solid var(--primary)', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.75rem' }} onClick={() => setShowBlockedList(!showBlockedList)}>
-                  {showBlockedList ? 'Hide Blocked Users' : 'View Blocked Users List'}
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem' }}>🔑 TWO-FACTOR AUTHENTICATION</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: '0 0 0.75rem 0' }}>Protect your account with an authenticator app code.</p>
+              {!is2FASetupVisible ? (
+                <button style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }} onClick={handleGenerate2FA}>
+                  Setup 2FA
                 </button>
-                {showBlockedList && (
-                  <div style={{ background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '12px', padding: '1rem', marginBottom: '1rem', maxHeight: '150px', overflowY: 'auto' }}>
-                    {blockedUsers.length === 0 ? (
-                      <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0, textAlign: 'center' }}>You haven't blocked anyone.</p>
-                    ) : (
-                      blockedUsers.map(user => (
-                        <div key={user} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--panel-border)' }}>
-                          <span style={{ color: 'var(--text-main)', fontSize: '0.9rem', fontWeight: '500' }}>{user}</span>
-                          <button onClick={() => socket.emit('user:unblock', user)} style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none', padding: '0.3rem 0.6rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: '600' }}>Unblock</button>
-                        </div>
-                      ))
-                    )}
+              ) : (
+                <div style={{ background: 'var(--panel-bg)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--panel-border)' }}>
+                  <p style={{ color: 'var(--text-main)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>1. Scan QR code (Authenticator/Authy)</p>
+                  {qrCodeUrl && <img src={qrCodeUrl} alt="2FA QR Code" style={{ background: 'white', padding: '0.5rem', borderRadius: '8px', marginBottom: '1rem', width: '120px', height: '120px' }} />}
+                  <p style={{ color: 'var(--text-main)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>2. Enter 6-digit code</p>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <input type="text" placeholder="000000" value={totpCode} onChange={e => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))} style={{ flex: 1, background: 'var(--input-bg)', border: '1px solid var(--panel-border)', color: 'var(--text-main)', borderRadius: '8px', padding: '0.5rem', outline: 'none', letterSpacing: '4px', textAlign: 'center', fontWeight: 'bold' }} />
+                    <button onClick={handleVerify2FA} disabled={totpCode.length !== 6} style={{ background: '#10b981', color: 'white', border: 'none', padding: '0 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', opacity: totpCode.length === 6 ? 1 : 0.5 }}>Verify</button>
                   </div>
-                )}
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: '1.4' }}>
-                  Need to report a user for harassment or scams? Click the 🚩 flag icon next to their name inside the chat window.
-                </p>
+                </div>
+              )}
+            </div>
+
+            {/* Message Privacy Card */}
+            <div style={{ background: 'var(--card-bg)', border: '1px solid var(--hover-bg)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s', gridRow: 'span 2' }}>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem' }}>🔒 MESSAGE PRIVACY</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: '0 0 1rem 0' }}>Who can send you direct messages?</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {['everyone', 'friends', 'nobody'].map(mode => {
+                  const currentPrivacy = userPrivacyMode?.[currentUser] || 'everyone';
+                  const isSelected = currentPrivacy === mode;
+                  return (
+                    <div key={mode} onClick={() => socket.emit('user:set_privacy', mode)} style={{
+                      display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', cursor: 'pointer',
+                      background: isSelected ? 'var(--primary-glow)' : 'var(--input-bg)',
+                      border: `1px solid ${isSelected ? 'var(--primary)' : 'var(--panel-border)'}`,
+                      borderRadius: '12px', transition: 'all 0.2s'
+                    }} onMouseEnter={e => !isSelected && (e.currentTarget.style.borderColor = 'var(--text-muted)')} onMouseLeave={e => !isSelected && (e.currentTarget.style.borderColor = 'var(--panel-border)')}>
+                      <div style={{
+                        width: '16px', height: '16px', borderRadius: '50%', flexShrink: 0,
+                        border: `2px solid ${isSelected ? 'var(--primary)' : 'var(--text-muted)'}`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s'
+                      }}>
+                        {isSelected && <div style={{ width: '8px', height: '8px', background: 'var(--primary)', borderRadius: '50%' }} />}
+                      </div>
+                      <div>
+                        <strong style={{ display: 'block', fontSize: '0.9rem', color: isSelected ? 'var(--text-main)' : 'var(--text-muted)', textTransform: 'capitalize' }}>
+                          {mode === 'friends' ? 'Friends Only' : mode}
+                        </strong>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                          {mode === 'everyone' ? 'Anyone can send DMs.' : mode === 'friends' ? 'Only friends can DM.' : 'No one can send DMs.'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
+            </div>
+
+            {/* Safety & Moderation Card */}
+            <div style={{ background: 'var(--card-bg)', border: '1px solid var(--hover-bg)', borderRadius: '16px', padding: '1.25rem', transition: 'all 0.2s' }}>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem' }}>🛡️ SAFETY & MODERATION</p>
+              <button style={{ background: 'transparent', color: 'var(--primary)', border: '1px solid var(--primary)', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.75rem', width: '100%' }} onClick={() => setShowBlockedList(!showBlockedList)}>
+                {showBlockedList ? 'Hide Blocked Users' : 'View Blocked Users List'}
+              </button>
+              {showBlockedList && (
+                <div style={{ background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '12px', padding: '0.75rem', marginBottom: '0.75rem', maxHeight: '100px', overflowY: 'auto' }}>
+                  {blockedUsers.length === 0 ? (
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0, textAlign: 'center' }}>No blocked users.</p>
+                  ) : (
+                    blockedUsers.map(user => (
+                      <div key={user} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--panel-border)' }}>
+                        <span style={{ color: 'var(--text-main)', fontSize: '0.85rem', fontWeight: '500' }}>{user}</span>
+                        <button onClick={() => socket.emit('user:unblock', user)} style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none', padding: '0.2rem 0.5rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.7rem', fontWeight: '600' }}>Unblock</button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', margin: 0, lineHeight: '1.4' }}>
+                Need to report a user? Click the 🚩 flag icon next to their name in chat.
+              </p>
             </div>
 
             {/* Reputation Card */}
@@ -373,11 +371,11 @@ export default function SettingsModal({ isOpen, onClose, currentUser, userProfil
               </div>
               
               {isSuspended ? (
-                <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#ef4444' }}>
-                  <Clock size={18} />
+                <div style={{ marginTop: '0.75rem', padding: '0.6rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ef4444' }}>
+                  <Clock size={16} />
                   <div>
-                    <strong style={{ display: 'block', fontSize: '0.9rem' }}>Suspension Active</strong>
-                    <span style={{ fontSize: '0.8rem' }}>Muted for {remainingMinutes} more minute(s).</span>
+                    <strong style={{ display: 'block', fontSize: '0.85rem' }}>Suspension Active</strong>
+                    <span style={{ fontSize: '0.75rem' }}>Muted for {remainingMinutes} min.</span>
                   </div>
                 </div>
               ) : (
